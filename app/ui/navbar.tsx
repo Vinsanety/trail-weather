@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 export default function Navbar() {
   // use theme from local storage if available or set light theme
   const [theme, setTheme] = useState(
-    localStorage.getItem("theme") ? localStorage.getItem("theme") : "emerald"
+    typeof window !== "undefined" ? localStorage.getItem("theme") : "emerald"
   );
   // update state on toggle
-  const handleToggle = (e) => {
+  const handleToggle = (e: any) => {
     if (e.target.checked) {
       setTheme("forest");
     } else {
@@ -22,7 +22,7 @@ export default function Navbar() {
     document.documentElement.setAttribute("data-theme", localTheme);
   }, [theme]);
   return (
-    <div className="navbar bg-base-100 shadow-lg">
+    <div className="navbar shadow-md">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">Trail Weather</a>
         <div className="flex-none">
@@ -53,13 +53,6 @@ export default function Navbar() {
       </div>
 
       <div className="flex-none gap-2">
-        <div className="form-control">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-24 md:w-auto"
-          />
-        </div>
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
             <li>

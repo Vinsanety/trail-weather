@@ -1,13 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 // import { callAPI } from "../api/route";
 
 interface WeatherData {
+  [x: string]: any;
   location: {
     name: string;
   };
   current: {
     condition: {
+      icon: string | undefined;
       text: string;
     };
     temp_f: number;
@@ -23,7 +26,7 @@ export default function CitySearch() {
   const getCitySearchWeather = async () => {
     try {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -38,7 +41,7 @@ export default function CitySearch() {
 
   return (
     <>
-      <div className="hero mt-8 py-4">
+      <div className="hero mt-8 pt-4">
         <div className="hero-content flex-col lg:flex-row">
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold">Trail Weather</h1>
@@ -77,16 +80,32 @@ export default function CitySearch() {
         </div>
       </div>
       {weatherData && (
-        <>
-          <div className="container mx-auto divider divider-primary"></div>
-          <div className="container card my-4 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
-            <div className="card-body">
-              <h2 className="card-title">{weatherData.location.name}</h2>
-              <p>{weatherData.current.condition.text}</p>
-              <p>{weatherData.current.temp_f}°F</p>
+        <div className="">
+          <div className="card my-8 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
+            {/* <h2 className="py-4 mx-auto text-3xl">
+              {weatherData.location.name}
+            </h2> */}
+            <figure className="pt-8">
+              <img alt="" src={weatherData.current.condition.icon} />
+            </figure>
+            <p className="m-auto">{weatherData.current.condition.text}</p>
+            <div className="flex card-body">
+              <h2 className="card-title mx-auto mb-6 text-5xl">
+                {weatherData.current.temp_f}°F
+              </h2>
+              <div className="flex justify-evenly mt-4">
+                <p>
+                  <b>High:</b>{" "}
+                  {weatherData.forecast.forecastday[0].day.maxtemp_f}°F
+                </p>
+                <p className="text-right">
+                  <b>Low:</b>{" "}
+                  {weatherData.forecast.forecastday[0].day.mintemp_f}°F
+                </p>
+              </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

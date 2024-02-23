@@ -52,7 +52,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="flex-none gap-2">
+      {/* <div className="flex-none gap-2">
         <div className="flex-none">
           <ul className="menu menu-horizontal px-1">
             <li>
@@ -70,7 +70,7 @@ export default function Navbar() {
             </li>
           </ul>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { ReactNode, useState } from "react";
-// import { callAPI } from "../api/route";
+import { useState } from "react";
 
 interface WeatherData {
   [x: string]: any;

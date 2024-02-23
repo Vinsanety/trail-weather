@@ -16,10 +16,10 @@ export default function Navbar() {
   };
   // set theme state in localstorage on mount & also update localstorage on state change
   useEffect(() => {
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("theme", theme || "{}");
     const localTheme = localStorage.getItem("theme");
     // add custom data-theme attribute to html tag required to update theme using DaisyUI
-    document.documentElement.setAttribute("data-theme", localTheme);
+    document.documentElement.setAttribute("data-theme", localTheme || "{}");
   }, [theme]);
   return (
     <div className="navbar shadow-md">

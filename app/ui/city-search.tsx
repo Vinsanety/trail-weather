@@ -5,6 +5,7 @@ import { useState } from "react";
 interface WeatherData {
   [x: string]: any;
   location: {
+    region: string;
     name: string;
   };
   current: {
@@ -38,6 +39,10 @@ export default function CitySearch() {
     }
   };
 
+  const currentTime = new Date()
+    .toLocaleTimeString()
+    .replace(/(.*)\D\d+/, "$1");
+
   return (
     <>
       <div className="hero mt-8 pt-4">
@@ -45,7 +50,8 @@ export default function CitySearch() {
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold">Trail Weather</h1>
             <p className="py-3">
-              Search a city to begin planning your next trail adventure!
+              Search a city or zip code to begin planning your next trail
+              adventure!
             </p>
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
@@ -79,20 +85,18 @@ export default function CitySearch() {
         </div>
       </div>
       {weatherData && (
-        <div className="">
-          <div className="card my-8 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
-            {/* <h2 className="py-4 mx-auto text-3xl">
-              {weatherData.location.name}
-            </h2> */}
-            <figure className="pt-8">
-              <img alt="" src={weatherData.current.condition.icon} />
-            </figure>
-            <p className="m-auto">{weatherData.current.condition.text}</p>
-            <div className="flex card-body">
-              <h2 className="card-title mx-auto mb-6 text-5xl">
-                {weatherData.current.temp_f}°F
+        <div className="grid grid-flow-row auto-rows-max">
+          <div className="stats my-8 mx-auto bg-base-200 shadow-xl">
+            <div className="stat place-items-center mx-auto">
+              <h2 className="stat-title flex mb-2 mx-auto justify-center items-center flex-wrap text-2xl">
+                {weatherData.location.name}, {weatherData.location.region}{" "}
+                <img alt="" src={weatherData.current.condition.icon} />
               </h2>
-              <div className="flex justify-evenly mt-4">
+              <p className="stat-value mx-auto justify-center">
+                {weatherData.current.temp_f}°F
+              </p>
+              <p className="mx-auto">{weatherData.current.condition.text}</p>
+              <div className="stat-desc flex justify-between mt-8">
                 <p>
                   <b>High:</b>{" "}
                   {weatherData.forecast.forecastday[0].day.maxtemp_f}°F
@@ -101,6 +105,37 @@ export default function CitySearch() {
                   <b>Low:</b>{" "}
                   {weatherData.forecast.forecastday[0].day.mintemp_f}°F
                 </p>
+              </div>
+            </div>
+          </div>
+          <div className="stats flex flex-col lg:flex-row mb-8 mx-auto shadow-xl bg-base-200">
+            <div className="stat pb-0 lg:pb-4">
+              <div className="stat-figure text-secondary"></div>
+              <div className="stat-title">Sunrise</div>
+              <div className="stat-value text-lg">
+                {weatherData.forecast.forecastday[0].astro.sunrise}
+              </div>
+            </div>
+            <div className="stat pb-0 lg:pb-4">
+              <div className="stat-figure text-secondary"></div>
+              <div className="stat-title">Sunset</div>
+              <div className="stat-value text-lg">
+                {weatherData.forecast.forecastday[0].astro.sunset}
+              </div>
+            </div>
+            <div className="stat pb-2 lg:pb-4">
+              <div className="stat-figure text-secondary"></div>
+              <div className="stat-title">Moon Phase</div>
+              <div className="stat-value text-lg">
+                {weatherData.forecast.forecastday[0].astro.moon_phase}
+              </div>
+              <div className="flex justify-between">
+                <div className="stat-desc">
+                  Moonrise: {weatherData.forecast.forecastday[0].astro.moonrise}
+                </div>
+                <div className="stat-desc">
+                  Moonset: {weatherData.forecast.forecastday[0].astro.moonset}
+                </div>
               </div>
             </div>
           </div>

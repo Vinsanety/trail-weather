@@ -95,7 +95,7 @@ export default function CitySearch() {
         // <div className="grid grid-flow-row auto-rows-max">
         <div className="container mx-auto">
           <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
-            <div className="stats my-2 lg:my-8 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
+            <div className="stats border-2 rounded-2xl border-slate-100 my-2 lg:my-8 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
               <div className="stat place-items-center mx-auto">
                 <h2 className="stat-title flex mb-2 mx-auto justify-center items-center flex-wrap text-2xl">
                   {weatherData.location.name}, {weatherData.location.region}{" "}
@@ -121,7 +121,7 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
-            <div className="stats mb-6 lg:my-8 mx-auto w-5/6 lg:w-4/6 bg-base-200 shadow-lg">
+            <div className="stats border-2 rounded-2xl border-slate-100 mb-6 lg:my-8 mx-auto w-5/6 lg:w-4/6 bg-base-200 shadow-lg">
               <div className="stat flex flex-wrap justify-evenly w-full">
                 <div className="stat-desc w-full md:w-2/6 flex flex-col gap-2 mb-6">
                   <h3 className="text-xl flex justify-center mb-2">Current</h3>
@@ -207,7 +207,7 @@ export default function CitySearch() {
               </div>
             </div>
           </div>
-          <div className="stats flex flex-col lg:flex-row mb-8 mx-auto shadow-lg bg-base-200">
+          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mb-8 mx-auto shadow-lg bg-base-200">
             <div className="stat pb-0 lg:pb-4">
               <div className="stat-figure text-secondary">
                 <Sunrise />

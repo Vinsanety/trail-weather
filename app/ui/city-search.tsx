@@ -76,6 +76,13 @@ export default function CitySearch() {
   const currentDay = days[date.getDay()];
   const dayOfMonth = date.getDate();
 
+  const convertTo12HourFormat = (time24: string) => {
+    const hours24 = parseInt(time24, 10);
+    const hours12 = ((hours24 + 11) % 12) + 1;
+    const suffix = hours24 >= 12 ? "pm" : "am";
+    return `${hours12}:${time24.slice(-2)} ${suffix}`;
+  };
+
   return (
     <>
       <div className="hero mt-8 pt-4">
@@ -83,8 +90,8 @@ export default function CitySearch() {
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold">Trail Weather</h1>
             <p className="py-3">
-              Search a city or zip code to begin planning your next trail
-              adventure!
+              Search for a City, State or Zip Code to begin planning your next
+              trail adventure!
             </p>
           </div>
           <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
@@ -155,93 +162,36 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
-            <div className="stats border-2 rounded-2xl border-slate-100 mb-6 lg:my-8 mx-auto w-5/6 lg:w-4/6 bg-base-200 shadow-lg">
-              <div className="stat flex flex-wrap justify-evenly w-full">
-                <div className="stat-desc w-full md:w-2/6 flex flex-col gap-2 mb-6">
-                  <h3 className="text-xl flex justify-center mb-2">Current</h3>
-                  <p className="flex justify-between">
-                    <b>Feels Like:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.feelslike_f}°F
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Wind:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.wind_mph}mph
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Wind Direction:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.wind_dir}
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Wind Gust:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.gust_mph}mph
-                    </span>
-                  </p>
-                  {/* <p className="flex justify-between">
-                    <b>Humidity:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.humidity}%
-                    </span>
-                  </p> */}
-                  <p className="flex justify-between">
-                    <b>UV Index:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.current.uv}
-                    </span>
-                  </p>
-                </div>
-                <div className="stat-desc w-full md:w-2/6 flex flex-col gap-2">
-                  <h3 className="text-xl flex justify-center mb-2">Day</h3>
-                  <p className="flex justify-between">
-                    <b>Max Wind:</b>{" "}
-                    <span className="text-base-content text-right">
-                      {weatherData.forecast.forecastday[0].day.maxwind_mph}mph
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Chance of Rain:</b>{" "}
-                    <span className="text-base-content">
-                      {
-                        weatherData.forecast.forecastday[0].day
-                          .daily_chance_of_rain
-                      }
-                      %
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Total Rain:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.forecast.forecastday[0].day.totalprecip_in}
-                      in
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Chance of Snow:</b>{" "}
-                    <span className="text-base-content">
-                      {
-                        weatherData.forecast.forecastday[0].day
-                          .daily_chance_of_snow
-                      }
-                      %
-                    </span>
-                  </p>
-                  <p className="flex justify-between">
-                    <b>Total Snow (cm):</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.forecast.forecastday[0].day.totalsnow_cm}cm
-                    </span>
-                  </p>
-                </div>
-              </div>
+            <div className="overflow-x-auto my-8 my-2 lg:my-8 mx-auto w-11/12 h-96">
+              <table className="table table-lg table-zebra table-pin-rows">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Temp (°F)</th>
+                    <th>Condition</th>
+                    <th>Wind</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weatherData?.forecast.forecastday[0].hour.map(
+                    (hour: any) => (
+                      <tr key={hour.time}>
+                        <td>
+                          {convertTo12HourFormat(hour.time.split(" ")[1])}
+                        </td>
+                        <td>{Math.round(hour.temp_f)}°</td>
+                        <td>{hour.condition.text}</td>
+                        <td>
+                          {hour.wind_dir} {Math.round(hour.wind_mph)} mph
+                        </td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mb-8 mx-auto shadow-lg bg-base-200">
+          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-11/12 lg:w-full shadow-lg bg-base-200">
             <div className="stat pb-0 lg:pb-4">
               <div className="stat-title">Sunrise</div>
               <div className="stat-value text-lg flex mb-2">

@@ -108,68 +108,100 @@ export default function CitySearch() {
                 <div className="stat-desc flex justify-between w-full mt-8">
                   <p>
                     <b>High:</b>{" "}
-                    {weatherData.forecast.forecastday[0].day.maxtemp_f}°F
+                    <span className="text-base-content">
+                      {weatherData.forecast.forecastday[0].day.maxtemp_f}°F
+                    </span>
                   </p>
                   <p className="text-right">
                     <b>Low:</b>{" "}
-                    {weatherData.forecast.forecastday[0].day.mintemp_f}°F
+                    <span className="text-base-content">
+                      {weatherData.forecast.forecastday[0].day.mintemp_f}°F
+                    </span>
                   </p>
                 </div>
               </div>
             </div>
             <div className="stats mb-6 lg:my-8 mx-auto w-5/6 lg:w-4/6 bg-base-200 shadow-lg">
-              <div className="stat flex justify-evenly flex-wrap">
-                <div className="stat-desc flex flex-col gap-2 mb-6">
+              <div className="stat flex flex-wrap justify-evenly w-full">
+                <div className="stat-desc w-full md:w-2/6 flex flex-col gap-2 mb-6">
                   <h3 className="text-xl flex justify-center mb-2">Current</h3>
-                  <p>
-                    <b>Feels Like:</b> {weatherData.current.feelslike_f}°F
+                  <p className="flex justify-between">
+                    <b>Feels Like:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.feelslike_f}°F
+                    </span>
                   </p>
-                  <p>
-                    <b>Wind:</b> {weatherData.current.wind_mph}mph
+                  <p className="flex justify-between">
+                    <b>Wind:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.wind_mph}mph
+                    </span>
                   </p>
-                  <p>
-                    <b>Wind Direction:</b> {weatherData.current.wind_dir}
+                  <p className="flex justify-between">
+                    <b>Wind Direction:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.wind_dir}
+                    </span>
                   </p>
-                  <p>
-                    <b>Wind Gust:</b> {weatherData.current.gust_mph}mph
+                  <p className="flex justify-between">
+                    <b>Wind Gust:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.gust_mph}mph
+                    </span>
                   </p>
-                  <p>
-                    <b>Humidity:</b> {weatherData.current.humidity}%
+                  <p className="flex justify-between">
+                    <b>Humidity:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.humidity}%
+                    </span>
                   </p>
-                  <p>
-                    <b>UV Index:</b> {weatherData.current.uv}
+                  <p className="flex justify-between">
+                    <b>UV Index:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.current.uv}
+                    </span>
                   </p>
                 </div>
-                <div className="stat-desc flex flex-col gap-2">
+                <div className="stat-desc w-full md:w-2/6 flex flex-col gap-2">
                   <h3 className="text-xl flex justify-center mb-2">Day</h3>
-                  <p>
+                  <p className="flex justify-between">
                     <b>Max Wind:</b>{" "}
-                    {weatherData.forecast.forecastday[0].day.maxwind_mph}mph
+                    <span className="text-base-content text-right">
+                      {weatherData.forecast.forecastday[0].day.maxwind_mph}mph
+                    </span>
                   </p>
-                  <p>
+                  <p className="flex justify-between">
                     <b>Chance of Rain:</b>{" "}
-                    {
-                      weatherData.forecast.forecastday[0].day
-                        .daily_chance_of_rain
-                    }
-                    %
+                    <span className="text-base-content">
+                      {
+                        weatherData.forecast.forecastday[0].day
+                          .daily_chance_of_rain
+                      }
+                      %
+                    </span>
                   </p>
-                  <p>
-                    <b>Total Precipitation:</b>{" "}
-                    {weatherData.forecast.forecastday[0].day.totalprecip_in}
-                    in
+                  <p className="flex justify-between">
+                    <b>Total Rain:</b>{" "}
+                    <span className="text-base-content">
+                      {weatherData.forecast.forecastday[0].day.totalprecip_in}
+                      in
+                    </span>
                   </p>
-                  <p>
+                  <p className="flex justify-between">
                     <b>Chance of Snow:</b>{" "}
-                    {
-                      weatherData.forecast.forecastday[0].day
-                        .daily_chance_of_snow
-                    }
-                    %
+                    <span className="text-base-content">
+                      {
+                        weatherData.forecast.forecastday[0].day
+                          .daily_chance_of_snow
+                      }
+                      %
+                    </span>
                   </p>
-                  <p>
+                  <p className="flex justify-between">
                     <b>Total Snow (cm):</b>{" "}
-                    {weatherData.forecast.forecastday[0].day.totalsnow_cm}cm
+                    <span className="text-base-content">
+                      {weatherData.forecast.forecastday[0].day.totalsnow_cm}cm
+                    </span>
                   </p>
                 </div>
               </div>

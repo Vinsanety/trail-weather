@@ -10,10 +10,10 @@ interface WeatherData {
     name: string;
   };
   current: {
-    uv: ReactNode;
-    gust_mph: ReactNode;
-    feelslike_f: ReactNode;
-    humidity: ReactNode;
+    uv: number;
+    gust_mph: number;
+    feelslike_f: number;
+    humidity: number;
     wind_dir: string;
     wind_mph: number;
     condition: {

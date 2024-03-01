@@ -125,28 +125,34 @@ export default function CitySearch() {
         </div>
       </div>
       {weatherData && (
-        <div className="container mx-auto">
+        <div className="container mb-16 mx-auto">
+          <hr className="my-6 mx-auto w-11/12" />
+          <h2 className="flex my-4 justify-center md:justify-start items-center flex-wrap text-4xl">
+            {weatherData.location.name}, {weatherData.location.region}
+          </h2>
           <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
-            <div className="stats border-2 rounded-2xl border-slate-100 my-2 lg:my-8 mx-auto w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
-              <div className="stat place-items-center mx-auto">
-                <h2 className="stat-title flex mb-2 mx-auto justify-center items-center flex-wrap text-2xl">
-                  {weatherData.location.name}, {weatherData.location.region}
-                </h2>
-                <p className="flex justify-evenly w-full">
-                  {currentDay}, {currentMonth} {dayOfMonth}
-                  <span>{currentTime}</span>
-                </p>
-                <p className="stat-value flex items-center mt-4 mx-auto justify-center">
+            <div className="card mx-auto border-2 rounded-2xl border-slate-100 mb-2 lg:mb-8 w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
+              <div className="card-body">
+                <div className="flex justify-between flex-wrap gap-x-4">
+                  <p className="text-xl grow-0">
+                    {currentDay}, {currentMonth} {dayOfMonth}
+                  </p>
+                  <p className="text-xl grow-0">{currentTime}</p>
+                </div>
+                <p className="flex items-center justify-center mt-8 text-6xl font-bold">
                   {Math.round(weatherData.current.temp_f)}°F
                   <img alt="" src={weatherData.current.condition.icon} />
                 </p>
-                <p className="mx-auto">{weatherData.current.condition.text}</p>
-                <p className="flex mx-auto">
-                  <Wind />
-                  {weatherData.current.wind_dir}
-                  {Math.round(weatherData.current.wind_mph)} mph
-                </p>
-                <div className="stat-desc flex justify-between w-full mt-8">
+                <div className="mx-auto">
+                  <p className="grow-0 text-lg">
+                    {weatherData.current.condition.text}
+                  </p>
+                  <p className="inline-flex grow-0 text-lg">
+                    <Wind /> {weatherData.current.wind_dir}{" "}
+                    {Math.round(weatherData.current.wind_mph)} mph
+                  </p>
+                </div>
+                <div className="flex justify-between w-full mt-16">
                   <p>
                     <b>High:</b>{" "}
                     <span className="text-base-content">
@@ -162,7 +168,7 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto my-8 my-2 lg:my-8 mx-auto w-11/12 h-96">
+            <div className="overflow-x-auto mb-2 lg:mb-8 mx-auto w-11/12 h-96">
               <table className="table table-lg table-zebra table-pin-rows">
                 <thead>
                   <tr>

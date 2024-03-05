@@ -101,7 +101,7 @@ export default function CitySearch() {
               trail adventure!
             </p>
           </div>
-          <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+          <div className="card shrink-0 w-full max-w-sm shadow-xl bg-base-100 border-2 rounded-2xl border-slate-100">
             <form className="card-body">
               <div className="form-control">
                 <label className="label">
@@ -176,13 +176,13 @@ export default function CitySearch() {
               </div>
             </div>
             <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-11/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
-              <table className="table table-lg table-zebra table-pin-rows">
+              <table className="table table-sm md:table-lg table-zebra table-pin-rows">
                 <thead>
                   <tr>
                     <th>Time</th>
                     <th>Temp (°F)</th>
                     <th>Condition</th>
-                    <th>Wind</th>
+                    <th className="hidden sm:table-cell">Wind</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,9 +195,9 @@ export default function CitySearch() {
                             ? "Now"
                             : convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
-                        <td>{Math.round(hour.temp_f)}°</td>
+                        <td className="pl-8">{Math.round(hour.temp_f)}°</td>
                         <td>{hour.condition.text}</td>
-                        <td>
+                        <td className="hidden sm:table-cell">
                           {hour.wind_dir} {Math.round(hour.wind_mph)} mph
                         </td>
                       </tr>
@@ -210,9 +210,9 @@ export default function CitySearch() {
                         <td>
                           {convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
-                        <td>{Math.round(hour.temp_f)}°</td>
+                        <td className="pl-8">{Math.round(hour.temp_f)}°</td>
                         <td>{hour.condition.text}</td>
-                        <td>
+                        <td className="hidden sm:table-cell">
                           {hour.wind_dir} {Math.round(hour.wind_mph)} mph
                         </td>
                       </tr>

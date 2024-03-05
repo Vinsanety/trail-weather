@@ -175,7 +175,7 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto mb-2 lg:mb-8 mx-auto w-11/12 h-96">
+            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-11/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
               <table className="table table-lg table-zebra table-pin-rows">
                 <thead>
                   <tr>
@@ -202,14 +202,13 @@ export default function CitySearch() {
                         </td>
                       </tr>
                     ))}
+                  <td className="font-bold">Tomorrow</td>
                   {weatherData?.forecast.forecastday[1].hour
                     .slice(0, currentHourIndex)
-                    .map((hour: any, index: number) => (
+                    .map((hour: any) => (
                       <tr key={hour.time}>
                         <td>
-                          {index === 0
-                            ? "Tomorrow 12:00 am"
-                            : convertTo12HourFormat(hour.time.split(" ")[1])}
+                          {convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
                         <td>{Math.round(hour.temp_f)}°</td>
                         <td>{hour.condition.text}</td>

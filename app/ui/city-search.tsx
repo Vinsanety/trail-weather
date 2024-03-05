@@ -110,7 +110,9 @@ export default function CitySearch() {
                 <input
                   className="input input-bordered"
                   type="text"
-                  placeholder="Boulder, CO"
+                  placeholder="City, State"
+                  onFocus={(e) => (e.target.placeholder = "")}
+                  onBlur={(e) => (e.target.placeholder = "City, State")}
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
@@ -133,7 +135,7 @@ export default function CitySearch() {
       </div>
       {weatherData && (
         <div className="container mb-16 mx-auto">
-          <hr className="my-6 mx-auto w-11/12" />
+          <hr className="my-6 mx-auto w-11/12 border-neutral" />
           <h2 className="flex my-4 justify-center md:justify-start items-center flex-wrap text-4xl">
             {weatherData.location.name}, {weatherData.location.region}
           </h2>
@@ -148,9 +150,13 @@ export default function CitySearch() {
                 </div>
                 <p className="flex items-center justify-center mt-8 text-6xl font-bold">
                   {Math.round(weatherData.current.temp_f)}°F
-                  <img alt="" src={weatherData.current.condition.icon} />
+                  <img
+                    alt="Weather condition"
+                    aria-hidden="true"
+                    src={weatherData.current.condition.icon}
+                  />
                 </p>
-                <div className="mx-auto">
+                <div className="mx-auto text-center">
                   <p className="grow-0 text-lg">
                     {weatherData.current.condition.text}
                   </p>
@@ -181,7 +187,7 @@ export default function CitySearch() {
                   <tr>
                     <th>Time</th>
                     <th>Temp (°F)</th>
-                    <th>Condition</th>
+                    <th>Rain (%)</th>
                     <th className="hidden sm:table-cell">Wind</th>
                   </tr>
                 </thead>
@@ -195,8 +201,16 @@ export default function CitySearch() {
                             ? "Now"
                             : convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
-                        <td className="pl-8">{Math.round(hour.temp_f)}°</td>
-                        <td>{hour.condition.text}</td>
+                        <td>
+                          {Math.round(hour.temp_f)}°{" "}
+                          <img
+                            className="inline h-10 w-10"
+                            alt="Weather condition"
+                            aria-hidden="true"
+                            src={hour.condition.icon}
+                          />
+                        </td>
+                        <td>{hour.chance_of_rain}%</td>
                         <td className="hidden sm:table-cell">
                           {hour.wind_dir} {Math.round(hour.wind_mph)} mph
                         </td>
@@ -210,8 +224,16 @@ export default function CitySearch() {
                         <td>
                           {convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
-                        <td className="pl-8">{Math.round(hour.temp_f)}°</td>
-                        <td>{hour.condition.text}</td>
+                        <td>
+                          {Math.round(hour.temp_f)}°{" "}
+                          <img
+                            className="inline h-10 w-10"
+                            alt="Weather condition"
+                            aria-hidden="true"
+                            src={hour.condition.icon}
+                          />
+                        </td>
+                        <td>{hour.chance_of_rain}%</td>
                         <td className="hidden sm:table-cell">
                           {hour.wind_dir} {Math.round(hour.wind_mph)} mph
                         </td>

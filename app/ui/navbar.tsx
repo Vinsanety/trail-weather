@@ -22,7 +22,7 @@ export default function Navbar() {
     document.documentElement.setAttribute("data-theme", localTheme || "{}");
   }, [theme]);
   return (
-    <div className="navbar shadow-md">
+    <div className="navbar shadow-md border-b-2 border-neutral">
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">Trail Weather</a>
         <div className="flex-none">

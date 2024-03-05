@@ -42,7 +42,7 @@ export default function CitySearch() {
   const getCitySearchWeather = async () => {
     try {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}`
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=2`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -82,6 +82,13 @@ export default function CitySearch() {
     const suffix = hours24 >= 12 ? "pm" : "am";
     return `${hours12}:${time24.slice(-2)} ${suffix}`;
   };
+
+  const currentHourIndex = weatherData?.forecast.forecastday[0].hour.findIndex(
+    (hour: any) => {
+      const hourTime = new Date(hour.time);
+      return hourTime.getHours() === date.getHours();
+    }
+  );
 
   return (
     <>
@@ -179,11 +186,14 @@ export default function CitySearch() {
                   </tr>
                 </thead>
                 <tbody>
-                  {weatherData?.forecast.forecastday[0].hour.map(
-                    (hour: any) => (
+                  {weatherData?.forecast.forecastday[0].hour
+                    .slice(currentHourIndex, currentHourIndex + 23)
+                    .map((hour: any, index: number) => (
                       <tr key={hour.time}>
                         <td>
-                          {convertTo12HourFormat(hour.time.split(" ")[1])}
+                          {index === 0
+                            ? "Now"
+                            : convertTo12HourFormat(hour.time.split(" ")[1])}
                         </td>
                         <td>{Math.round(hour.temp_f)}°</td>
                         <td>{hour.condition.text}</td>
@@ -191,8 +201,23 @@ export default function CitySearch() {
                           {hour.wind_dir} {Math.round(hour.wind_mph)} mph
                         </td>
                       </tr>
-                    )
-                  )}
+                    ))}
+                  {weatherData?.forecast.forecastday[1].hour
+                    .slice(0, currentHourIndex)
+                    .map((hour: any, index: number) => (
+                      <tr key={hour.time}>
+                        <td>
+                          {index === 0
+                            ? "Tomorrow 12:00 am"
+                            : convertTo12HourFormat(hour.time.split(" ")[1])}
+                        </td>
+                        <td>{Math.round(hour.temp_f)}°</td>
+                        <td>{hour.condition.text}</td>
+                        <td>
+                          {hour.wind_dir} {Math.round(hour.wind_mph)} mph
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

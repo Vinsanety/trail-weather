@@ -38,6 +38,7 @@ const API_KEY = `${process.env.NEXT_PUBLIC_WEATHER_API_KEY}`;
 export default function CitySearch() {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const getCitySearchWeather = async () => {
     try {
@@ -52,6 +53,9 @@ export default function CitySearch() {
       console.log(data);
     } catch (error) {
       console.error(error);
+      setErrorMsg(
+        'An error occurred while fetching weather data. Please try again with a valid "City, State", or Zip Code.'
+      );
     }
   };
 
@@ -125,6 +129,7 @@ export default function CitySearch() {
                   onClick={(e) => {
                     e.preventDefault();
                     getCitySearchWeather();
+                    setErrorMsg("");
                   }}
                 >
                   Send it
@@ -134,7 +139,25 @@ export default function CitySearch() {
           </div>
         </div>
       </div>
-      {weatherData && (
+      {errorMsg && (
+        <div role="alert" className="alert mt-8 mb-16 md:mt-24 mx-auto w-10/12">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-info shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span className="pb-4 sm:pb-0">{errorMsg}</span>
+        </div>
+      )}
+      {weatherData && !errorMsg && (
         <div className="container mb-16 mx-auto">
           <hr className="my-6 mx-auto w-11/12 border-neutral" />
           <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">

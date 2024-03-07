@@ -348,12 +348,8 @@ export default function CitySearch() {
                     (forecastday: any, index: number) => (
                       <tr key={index}>
                         <td>{forecastday.date.slice(5)}</td>
-                        <td className="text-center">
-                          {Math.round(forecastday.day.maxtemp_f)}°
-                        </td>
-                        <td className="text-center">
-                          {Math.round(forecastday.day.mintemp_f)}°
-                        </td>
+                        <td>{Math.round(forecastday.day.maxtemp_f)}°</td>
+                        <td>{Math.round(forecastday.day.mintemp_f)}°</td>
                         <td>
                           {forecastday.day.condition.text}
                           <img

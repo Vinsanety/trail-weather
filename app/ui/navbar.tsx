@@ -23,7 +23,10 @@ export default function Navbar() {
       <div className="flex-1">
         <a className="btn btn-ghost text-xl">Trail Weather</a>
         <div className="flex-none">
-          <label className="flex cursor-pointer gap-2">
+          <label
+            htmlFor="toggle-theme-checkbox"
+            className="flex cursor-pointer gap-2"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -39,6 +42,7 @@ export default function Navbar() {
               <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
             </svg>
             <input
+              id="toggle-theme-checkbox"
               type="checkbox"
               checked={theme === "forest"}
               value="forest"

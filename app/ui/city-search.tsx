@@ -104,10 +104,11 @@ export default function CitySearch() {
           <div className="card shrink-0 w-full max-w-sm shadow-xl bg-base-100 border-2 rounded-2xl border-slate-100">
             <form className="card-body">
               <div className="form-control">
-                <label className="label">
+                <label htmlFor="city-search-input" className="label">
                   <span className="label-text">City Search</span>
                 </label>
                 <input
+                  id="city-search-input"
                   className="input input-bordered"
                   type="text"
                   placeholder="City, State"
@@ -136,7 +137,7 @@ export default function CitySearch() {
       {weatherData && (
         <div className="container mb-16 mx-auto">
           <hr className="my-6 mx-auto w-11/12 border-neutral" />
-          <h2 className="flex my-4 justify-center md:justify-start items-center flex-wrap text-4xl">
+          <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
             {weatherData.location.name}, {weatherData.location.region}
           </h2>
           <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
@@ -181,7 +182,7 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
-            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-11/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
+            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-10/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
               <table className="table table-sm md:table-lg table-zebra table-pin-rows">
                 <thead>
                   <tr>
@@ -216,7 +217,12 @@ export default function CitySearch() {
                         </td>
                       </tr>
                     ))}
-                  <td className="font-bold">Tomorrow</td>
+                  <tr>
+                    <td className="font-bold">Tomorrow</td>
+                    <td></td>
+                    <td></td>
+                    <td className="hidden sm:table-cell"></td>
+                  </tr>
                   {weatherData?.forecast.forecastday[1].hour
                     .slice(0, currentHourIndex)
                     .map((hour: any) => (
@@ -243,7 +249,7 @@ export default function CitySearch() {
               </table>
             </div>
           </div>
-          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-11/12 lg:w-full shadow-lg bg-base-200">
+          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-10/12 lg:w-full shadow-lg bg-base-200">
             <div className="stat pb-0 lg:pb-4">
               <div className="stat-title">Sunrise</div>
               <div className="stat-value text-lg flex mb-2">

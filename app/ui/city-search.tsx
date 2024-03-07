@@ -43,7 +43,7 @@ export default function CitySearch() {
   const getCitySearchWeather = async () => {
     try {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=2`
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=3`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -59,6 +59,7 @@ export default function CitySearch() {
     }
   };
 
+  // Current Day
   const days = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
   const months = [
     "Jan",
@@ -323,6 +324,52 @@ export default function CitySearch() {
                   Moonset: {weatherData.forecast.forecastday[0].astro.moonset}
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="container mb-16 mx-auto">
+            <hr className="my-6 mx-auto w-11/12 border-neutral" />
+            <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
+              3 day forecast
+            </h2>
+            <div className="mx-auto w-10/12 lg:w-full overflow-y-auto">
+              <table className="table table-sm md:table-lg table-pin-cols">
+                <thead>
+                  <tr>
+                    <th>Day</th>
+                    <th>High (°F)</th>
+                    <th>Low (°F)</th>
+                    <th>Condition</th>
+                    <th>Rain (%)</th>
+                    <th>Wind</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {weatherData?.forecast.forecastday.map(
+                    (forecastday: any, index: number) => (
+                      <tr key={index}>
+                        <td>{forecastday.date.slice(5)}</td>
+                        <td className="text-center">
+                          {Math.round(forecastday.day.maxtemp_f)}°
+                        </td>
+                        <td className="text-center">
+                          {Math.round(forecastday.day.mintemp_f)}°
+                        </td>
+                        <td>
+                          {forecastday.day.condition.text}
+                          <img
+                            className="inline h-10 w-10"
+                            alt="Weather condition"
+                            aria-hidden="true"
+                            src={forecastday.day.condition.icon}
+                          />
+                        </td>
+                        <td>{forecastday.day.daily_chance_of_rain}%</td>
+                        <td>{Math.round(forecastday.day.maxwind_mph)} mph</td>
+                      </tr>
+                    )
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

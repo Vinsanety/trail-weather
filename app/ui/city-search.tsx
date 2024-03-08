@@ -75,12 +75,14 @@ export default function CitySearch() {
     "Nov",
     "Dec",
   ];
+  // Used to display in Current Conditions Card
   const date = new Date();
   const currentTime = date.toLocaleTimeString().replace(/(.*)\D\d+/, "$1");
-  const currentMonth = months[date.getMonth()];
   const currentDay = days[date.getDay()];
+  const currentMonth = months[date.getMonth()];
   const dayOfMonth = date.getDate();
 
+  // Takes 24hour format of API and converts to 12hour
   const convertTo12HourFormat = (time24: string) => {
     const hours24 = parseInt(time24, 10);
     const hours12 = ((hours24 + 11) % 12) + 1;
@@ -88,12 +90,21 @@ export default function CitySearch() {
     return `${hours12}:${time24.slice(-2)} ${suffix}`;
   };
 
+  // Finds current hour index to populate the 24Hour Forecast Table, starting at the current time
   const currentHourIndex = weatherData?.forecast.forecastday[0].hour.findIndex(
     (hour: any) => {
       const hourTime = new Date(hour.time);
       return hourTime.getHours() === date.getHours();
     }
   );
+
+  // Takes 2024-01-01 date format and converts to Jan 1, used in 3 Day Forecast Table
+  function formatForecastDayDate(inputDate: any) {
+    const [year, month, day] = inputDate.split("-");
+    const monthAbbreviation = months[parseInt(month) - 1];
+    const formattedDate = `${monthAbbreviation} ${parseInt(day)}`;
+    return formattedDate;
+  }
 
   return (
     <>
@@ -165,6 +176,7 @@ export default function CitySearch() {
             {weatherData.location.name}, {weatherData.location.region}
           </h2>
           <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
+            {/* Current Conditions Card */}
             <div className="card mx-auto border-2 rounded-2xl border-slate-100 mb-2 lg:mb-8 w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
               <div className="card-body">
                 <div className="flex justify-between flex-wrap gap-x-4">
@@ -206,6 +218,7 @@ export default function CitySearch() {
                 </div>
               </div>
             </div>
+            {/* 24Hour Forecast Table */}
             <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-10/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
               <table className="table table-sm md:table-lg table-zebra table-pin-rows">
                 <thead>
@@ -273,6 +286,7 @@ export default function CitySearch() {
               </table>
             </div>
           </div>
+          {/* Current Day Weather Attributes */}
           <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-10/12 lg:w-full shadow-lg bg-base-200">
             <div className="stat pb-0 lg:pb-4">
               <div className="stat-title">Sunrise</div>
@@ -326,6 +340,7 @@ export default function CitySearch() {
               </div>
             </div>
           </div>
+          {/* 3 Day Forecast Table */}
           <div className="container mb-16 mx-auto">
             <hr className="my-6 mx-auto w-11/12 border-neutral" />
             <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
@@ -347,10 +362,12 @@ export default function CitySearch() {
                   {weatherData?.forecast.forecastday.map(
                     (forecastday: any, index: number) => (
                       <tr key={index}>
-                        <td>{forecastday.date.slice(5)}</td>
+                        <td className="text-nowrap">
+                          {formatForecastDayDate(forecastday.date)}
+                        </td>
                         <td>{Math.round(forecastday.day.maxtemp_f)}°</td>
                         <td>{Math.round(forecastday.day.mintemp_f)}°</td>
-                        <td>
+                        <td className="text-nowrap pr-12">
                           {forecastday.day.condition.text}
                           <img
                             className="inline h-10 w-10"
@@ -360,7 +377,9 @@ export default function CitySearch() {
                           />
                         </td>
                         <td>{forecastday.day.daily_chance_of_rain}%</td>
-                        <td>{Math.round(forecastday.day.maxwind_mph)} mph</td>
+                        <td className="text-nowrap">
+                          {Math.round(forecastday.day.maxwind_mph)} mph
+                        </td>
                       </tr>
                     )
                   )}

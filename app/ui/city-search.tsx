@@ -347,7 +347,7 @@ export default function CitySearch() {
               3 day forecast
             </h2>
             <div className="mx-auto w-10/12 lg:w-full overflow-y-auto">
-              <table className="table table-sm md:table-lg table-pin-cols">
+              <table className="table table-sm md:table-lg table-pin-rows">
                 <thead>
                   <tr>
                     <th>Day</th>

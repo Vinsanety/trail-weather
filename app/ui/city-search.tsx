@@ -53,9 +53,7 @@ export default function CitySearch() {
       console.log(data);
     } catch (error) {
       console.error(error);
-      setErrorMsg(
-        'An error occurred while fetching weather data. Please try again with a valid "City, State", or Zip Code.'
-      );
+      setErrorMsg('Please try again with a valid "City, State", or Zip Code.');
     }
   };
 
@@ -117,19 +115,19 @@ export default function CitySearch() {
               trail adventure!
             </p>
           </div>
-          <div className="card shrink-0 w-full max-w-sm shadow-xl bg-base-100 border-2 rounded-2xl border-slate-100">
+          <div className="card shrink-0 w-full max-w-sm bg-base-100">
             <form className="card-body">
               <div className="form-control">
                 <label htmlFor="city-search-input" className="label">
-                  <span className="label-text">City Search</span>
+                  <span className="label-text">City, State or Zip Code</span>
                 </label>
                 <input
                   id="city-search-input"
-                  className="input input-bordered"
+                  className="input input-primary p-6 border-2"
                   type="text"
-                  placeholder="City, State"
+                  placeholder="i.e. Boulder, CO"
                   onFocus={(e) => (e.target.placeholder = "")}
-                  onBlur={(e) => (e.target.placeholder = "City, State")}
+                  onBlur={(e) => (e.target.placeholder = "i.e. Boulder, CO")}
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   required
@@ -137,7 +135,7 @@ export default function CitySearch() {
               </div>
               <div className="form-control mt-6">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary text-lg"
                   onClick={(e) => {
                     e.preventDefault();
                     getCitySearchWeather();
@@ -152,7 +150,10 @@ export default function CitySearch() {
         </div>
       </div>
       {errorMsg && (
-        <div role="alert" className="alert mt-8 mb-16 md:mt-24 mx-auto w-10/12">
+        <div
+          role="alert"
+          className="alert my-4 lg:mt-24 mx-auto w-10/12 lg:w-6/12 whitespace-pre-line"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -171,13 +172,16 @@ export default function CitySearch() {
       )}
       {weatherData && !errorMsg && (
         <div className="container mb-16 mx-auto">
-          <hr className="my-6 mx-auto w-11/12 border-neutral" />
           <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
             {weatherData.location.name}, {weatherData.location.region}
           </h2>
+          <hr className="my-6 mx-auto border-neutral" />
+          <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
+            Current Conditions
+          </h3>
           <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
             {/* Current Conditions Card */}
-            <div className="card mx-auto border-2 rounded-2xl border-slate-100 mb-2 lg:mb-8 w-5/6 lg:w-2/6 bg-base-200 shadow-lg">
+            <div className="card mx-auto mb-2 lg:mb-8 w-5/6 lg:w-2/6 rounded-none border-2">
               <div className="card-body">
                 <div className="flex justify-between flex-wrap gap-x-4">
                   <p className="text-xl grow-0">
@@ -219,7 +223,7 @@ export default function CitySearch() {
               </div>
             </div>
             {/* 24Hour Forecast Table */}
-            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-10/12 h-96 border-2 rounded-2xl border-slate-100 shadow-lg">
+            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-10/12 h-96 rounded-none">
               <table className="table table-sm md:table-lg table-zebra table-pin-rows">
                 <thead>
                   <tr>
@@ -286,8 +290,11 @@ export default function CitySearch() {
               </table>
             </div>
           </div>
+          <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
+            Today in {weatherData.location.name}
+          </h3>
           {/* Current Day Weather Attributes */}
-          <div className="stats border-2 rounded-2xl border-slate-100 flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-10/12 lg:w-full shadow-lg bg-base-200">
+          <div className="stats flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-10/12 lg:w-full  bg-base-200">
             <div className="stat pb-0 lg:pb-4">
               <div className="stat-title">Sunrise</div>
               <div className="stat-value text-lg flex mb-2">
@@ -342,12 +349,11 @@ export default function CitySearch() {
           </div>
           {/* 3 Day Forecast Table */}
           <div className="container mb-16 mx-auto">
-            <hr className="my-6 mx-auto w-11/12 border-neutral" />
-            <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
+            <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
               3 day forecast
-            </h2>
+            </h3>
             <div className="mx-auto w-10/12 lg:w-full overflow-y-auto">
-              <table className="table table-sm md:table-lg table-pin-rows">
+              <table className="table table-zebra table-sm md:table-lg table-pin-rows">
                 <thead>
                   <tr>
                     <th>Day</th>

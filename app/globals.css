@@ -8,12 +8,24 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: night) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
+}
+
+/* When DaisyUI emerald theme is active */
+html[data-theme="emerald"],
+body[data-theme="emerald"] {
+  color: black;
+}
+
+/* When DaisyUI night theme is active */
+html[data-theme="night"],
+body[data-theme="night"] {
+  color: white;
 }
 
 * {

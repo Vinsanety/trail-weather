@@ -13,7 +13,7 @@ export default function Navbar() {
     } else {
       document.documentElement.setAttribute("data-theme", theme);
     }
-  }, []);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === "emerald" ? "night" : "emerald";

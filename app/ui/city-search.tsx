@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   CloudRain,
   Droplets,
@@ -39,6 +39,8 @@ export default function CitySearch() {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  // Ref for Current Conditions section
+  const currentConditionsRef = useRef<HTMLDivElement | null>(null);
 
   const getCitySearchWeather = async () => {
     try {
@@ -50,7 +52,16 @@ export default function CitySearch() {
       }
       const data: WeatherData = await response.json();
       setWeatherData(data);
+      setErrorMsg("");
       console.log(data);
+
+      // Scroll to Current Conditions after data loads
+      setTimeout(() => {
+        currentConditionsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 300);
     } catch (error) {
       console.error(error);
       setErrorMsg('Please try again with a valid "City, State", or Zip Code.');
@@ -80,7 +91,7 @@ export default function CitySearch() {
   const currentMonth = months[date.getMonth()];
   const dayOfMonth = date.getDate();
 
-  // Takes 24hour format of API and converts to 12hour
+  // Convert 24h format to 12h
   const convertTo12HourFormat = (time24: string) => {
     const hours24 = parseInt(time24, 10);
     const hours12 = ((hours24 + 11) % 12) + 1;
@@ -88,7 +99,7 @@ export default function CitySearch() {
     return `${hours12}:${time24.slice(-2)} ${suffix}`;
   };
 
-  // Finds current hour index to populate the 24Hour Forecast Table, starting at the current time
+  // Find current hour index
   const currentHourIndex = weatherData?.forecast.forecastday[0].hour.findIndex(
     (hour: any) => {
       const hourTime = new Date(hour.time);
@@ -96,7 +107,7 @@ export default function CitySearch() {
     }
   );
 
-  // Takes 2024-01-01 date format and converts to Jan 1, used in 3 Day Forecast Table
+  // Format Date: 2024-01-01 format and converts to Jan 1 (used in 3 Day Forecast Table)
   function formatForecastDayDate(inputDate: any) {
     const [year, month, day] = inputDate.split("-");
     const monthAbbreviation = months[parseInt(month) - 1];
@@ -106,6 +117,7 @@ export default function CitySearch() {
 
   return (
     <>
+      {/* Hero Section */}
       <div className="hero mt-8 pt-4">
         <div className="hero-content flex-col lg:flex-row">
           <div className="text-center lg:text-left">
@@ -149,29 +161,23 @@ export default function CitySearch() {
           </div>
         </div>
       </div>
+
+      {/* Error Message */}
       {errorMsg && (
         <div
           role="alert"
           className="alert my-4 lg:mt-24 mx-auto w-10/12 lg:w-6/12 whitespace-pre-line"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="stroke-info shrink-0 w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
           <span className="pb-4 sm:pb-0">{errorMsg}</span>
         </div>
       )}
+
+      {/* Weather Data */}
       {weatherData && !errorMsg && (
-        <div className="container mb-16 mx-auto">
+        <div
+          className="container mb-16 mx-auto scroll-mt-8"
+          ref={currentConditionsRef}
+        >
           <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
             {weatherData.location.name}, {weatherData.location.region}
           </h2>

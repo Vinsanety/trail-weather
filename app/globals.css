@@ -3,18 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --tw-modern-bg-light: radial-gradient(
+  --tw-modern-bg-light:
+    radial-gradient(
       circle at 15% 15%,
       rgb(167 243 208 / 0.45),
       transparent 40%
     ),
     radial-gradient(circle at 85% 0%, rgb(191 219 254 / 0.35), transparent 35%),
     linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-  --tw-modern-bg-dark: radial-gradient(
-      circle at 20% 10%,
-      rgb(29 78 216 / 0.35),
-      transparent 35%
-    ),
+  --tw-modern-bg-dark:
+    radial-gradient(circle at 20% 10%, rgb(29 78 216 / 0.35), transparent 35%),
     radial-gradient(circle at 85% 0%, rgb(8 145 178 / 0.25), transparent 30%),
     linear-gradient(180deg, #020617 0%, #0f172a 100%);
   --tw-surface-1: color-mix(in oklab, var(--b1), white 8%);
@@ -46,7 +44,8 @@ body[data-theme="trail_dark"] {
 html[data-theme="alpine_accent"],
 body[data-theme="alpine_accent"] {
   color: var(--tw-text-primary);
-  background: radial-gradient(circle at 20% 0%, rgb(124 58 237 / 0.16), transparent 45%),
+  background:
+    radial-gradient(circle at 20% 0%, rgb(124 58 237 / 0.16), transparent 45%),
     linear-gradient(180deg, #f7f5ff 0%, #ede9fe 100%);
   min-height: 100%;
 }
@@ -82,10 +81,6 @@ body {
 
   .tw-section-day-outlook {
     @apply border-t border-base-content/10 pt-8 md:pt-10;
-  }
-
-  .tw-day-outlook-shell {
-    @apply rounded-lg border border-base-content/10 bg-base-100/20 p-4 md:p-5;
   }
 
   .tw-section-content-grid {
@@ -240,12 +235,8 @@ body {
     @apply text-base font-semibold tabular-nums md:text-lg;
   }
 
-  .tw-run-window-table {
-    @apply overflow-x-auto rounded-lg border border-base-content/10;
-  }
-
   .tw-run-window-header {
-    @apply border-b border-base-content/10 bg-base-200/40;
+    @apply mt-3 border-b border-base-content/10 bg-base-200/40;
   }
 
   .tw-run-window-th {
@@ -342,7 +333,9 @@ body {
     @apply w-full bg-base-100/80 px-3 py-2 text-base outline-none;
     border: 2px solid color-mix(in oklab, var(--bc), transparent 45%);
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--bc), transparent 80%);
-    transition: border-color 150ms ease, box-shadow 150ms ease,
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease,
       background-color 150ms ease;
   }
 

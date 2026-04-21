@@ -500,7 +500,11 @@ export default function CitySearch() {
             ref={currentConditionsRef}
           >
             <div className="mb-5 flex flex-wrap items-center justify-end">
-              <div className="tw-unit-toggle-group" role="group" aria-label="Temperature unit">
+              <div
+                className="tw-unit-toggle-group"
+                role="group"
+                aria-label="Temperature unit"
+              >
                 <button
                   type="button"
                   className={`tw-unit-toggle ${unit === "F" ? "tw-unit-toggle--active" : ""}`}
@@ -645,7 +649,9 @@ export default function CitySearch() {
                         <div key={card.title} className="tw-flat-row">
                           <div className="flex min-w-0 items-center gap-2">
                             {card.icon}
-                            <p className="text-sm font-semibold">{card.title}</p>
+                            <p className="text-sm font-semibold">
+                              {card.title}
+                            </p>
                           </div>
                           <div className="ml-auto text-right">
                             <span
@@ -685,7 +691,8 @@ export default function CitySearch() {
 
                       <div>
                         <p className="mb-2 text-center text-xs font-medium text-base-content/55">
-                          Where your score falls (0–55 poor · 55–75 fair · 75+ great)
+                          Where your score falls (0–55 poor · 55–75 fair · 75+
+                          great)
                         </p>
                         <div className="relative px-0.5 pt-1">
                           <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-base-content/15">
@@ -730,8 +737,8 @@ export default function CitySearch() {
                       </div>
                     </div>
                     <p className="max-w-sm text-center text-xs text-base-content/55">
-                      One number from rain, wind, UV, and temperature comfort—higher is generally better for
-                      easy trail miles.
+                      One number from rain, wind, UV, and temperature
+                      comfort—higher is generally better for easy trail miles.
                     </p>
                   </div>
                 </div>
@@ -757,7 +764,10 @@ export default function CitySearch() {
                       Wind
                     </span>
                   </div>
-                  <div className="tw-flat-list tw-run-window-body" role="rowgroup">
+                  <div
+                    className="tw-flat-list tw-run-window-body"
+                    role="rowgroup"
+                  >
                     {nextHours.map((hour, index) => (
                       <div
                         key={hour.time}
@@ -800,67 +810,65 @@ export default function CitySearch() {
 
           <section className="tw-section-shell tw-section-day-outlook">
             <p className="tw-section-kicker">3 Day outlook</p>
-            <div className="tw-day-outlook-shell">
-              <div className="tw-forecast-grid">
-                {weatherData.forecast.forecastday.map((forecastday, index) => (
-                  <div
-                    key={forecastday.date}
-                    className={`tw-forecast-day ${
-                      index === 0 ? "tw-forecast-today" : ""
-                    }`}
-                  >
-                    <div className="tw-forecast-day-header">
-                      <p className="inline-flex items-center gap-2 text-lg font-semibold">
-                        <CalendarDays className="h-4 w-4 shrink-0" />
-                        {index === 0
-                          ? "Today"
-                          : formatForecastDayDate(forecastday.date)}
-                      </p>
-                      <span className="inline-flex items-center gap-1.5 text-sm text-base-content/75">
-                        <Compass className="h-4 w-4 shrink-0" />
-                        {Math.round(forecastday.day.maxwind_mph)} mph
+            <div className="tw-forecast-grid">
+              {weatherData.forecast.forecastday.map((forecastday, index) => (
+                <div
+                  key={forecastday.date}
+                  className={`tw-forecast-day ${
+                    index === 0 ? "tw-forecast-today" : ""
+                  }`}
+                >
+                  <div className="tw-forecast-day-header">
+                    <p className="inline-flex items-center gap-2 text-lg font-semibold">
+                      <CalendarDays className="h-4 w-4 shrink-0" />
+                      {index === 0
+                        ? "Today"
+                        : formatForecastDayDate(forecastday.date)}
+                    </p>
+                    <span className="inline-flex items-center gap-1.5 text-sm text-base-content/75">
+                      <Compass className="h-4 w-4 shrink-0" />
+                      {Math.round(forecastday.day.maxwind_mph)} mph
+                    </span>
+                  </div>
+                  <div className="tw-forecast-day-condition">
+                    <p className="min-w-0 flex-1 text-base leading-snug">
+                      {forecastday.day.condition.text}
+                    </p>
+                    <img
+                      className="h-12 w-12 shrink-0"
+                      alt=""
+                      aria-hidden="true"
+                      src={forecastday.day.condition.icon}
+                    />
+                  </div>
+                  <div className="tw-forecast-day-stats">
+                    <div className="tw-forecast-stat">
+                      <span className="tw-forecast-stat-label">High</span>
+                      <span className="tw-forecast-stat-value">
+                        {displayTemp(
+                          forecastday.day.maxtemp_f,
+                          forecastday.day.maxtemp_c,
+                        )}
                       </span>
                     </div>
-                    <div className="tw-forecast-day-condition">
-                      <p className="min-w-0 flex-1 text-base leading-snug">
-                        {forecastday.day.condition.text}
-                      </p>
-                      <img
-                        className="h-12 w-12 shrink-0"
-                        alt=""
-                        aria-hidden="true"
-                        src={forecastday.day.condition.icon}
-                      />
+                    <div className="tw-forecast-stat">
+                      <span className="tw-forecast-stat-label">Low</span>
+                      <span className="tw-forecast-stat-value">
+                        {displayTemp(
+                          forecastday.day.mintemp_f,
+                          forecastday.day.mintemp_c,
+                        )}
+                      </span>
                     </div>
-                    <div className="tw-forecast-day-stats">
-                      <div className="tw-forecast-stat">
-                        <span className="tw-forecast-stat-label">High</span>
-                        <span className="tw-forecast-stat-value">
-                          {displayTemp(
-                            forecastday.day.maxtemp_f,
-                            forecastday.day.maxtemp_c,
-                          )}
-                        </span>
-                      </div>
-                      <div className="tw-forecast-stat">
-                        <span className="tw-forecast-stat-label">Low</span>
-                        <span className="tw-forecast-stat-value">
-                          {displayTemp(
-                            forecastday.day.mintemp_f,
-                            forecastday.day.mintemp_c,
-                          )}
-                        </span>
-                      </div>
-                      <div className="tw-forecast-stat">
-                        <span className="tw-forecast-stat-label">Rain</span>
-                        <span className="tw-forecast-stat-value">
-                          {forecastday.day.daily_chance_of_rain}%
-                        </span>
-                      </div>
+                    <div className="tw-forecast-stat">
+                      <span className="tw-forecast-stat-label">Rain</span>
+                      <span className="tw-forecast-stat-value">
+                        {forecastday.day.daily_chance_of_rain}%
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </section>
         </div>

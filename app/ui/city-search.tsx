@@ -358,9 +358,9 @@ export default function CitySearch() {
                     required
                   />
                 </div>
-                <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
+                <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                   <button
-                    className="tw-btn-min tw-btn-min-primary flex-1"
+                    className="tw-btn-min tw-btn-min-primary w-full sm:w-auto sm:flex-1"
                     type="submit"
                     disabled={isLoading}
                   >
@@ -368,7 +368,7 @@ export default function CitySearch() {
                     {isLoading ? "Loading..." : "Get Forecast"}
                   </button>
                   <button
-                    className="tw-btn-min"
+                    className="tw-btn-min w-full sm:w-auto"
                     type="button"
                     onClick={getWeatherForCurrentLocation}
                   >
@@ -385,7 +385,7 @@ export default function CitySearch() {
                       key={entry}
                       type="button"
                       onClick={() => getCitySearchWeather(entry)}
-                      className="tw-chip-min"
+                      className="tw-recent-pill"
                     >
                       {entry}
                     </button>
@@ -429,7 +429,7 @@ export default function CitySearch() {
         <div className="tw-page-grid mt-6">
           <section className="tw-content-band">
             <form
-              className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end"
+              className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 getCitySearchWeather(city);
@@ -455,9 +455,9 @@ export default function CitySearch() {
                   required
                 />
               </div>
-              <div className="flex flex-wrap gap-2 md:shrink-0">
+              <div className="flex w-full flex-col gap-2 md:w-auto md:shrink-0 md:flex-row md:flex-wrap">
                 <button
-                  className="tw-btn-min tw-btn-min-primary flex-1 md:flex-none md:min-w-[10rem]"
+                  className="tw-btn-min tw-btn-min-primary w-full md:w-auto md:min-w-[10rem]"
                   type="submit"
                   disabled={isLoading}
                 >
@@ -465,7 +465,7 @@ export default function CitySearch() {
                   {isLoading ? "Loading..." : "Get Forecast"}
                 </button>
                 <button
-                  className="tw-btn-min"
+                  className="tw-btn-min w-full md:w-auto"
                   type="button"
                   onClick={getWeatherForCurrentLocation}
                 >
@@ -482,7 +482,7 @@ export default function CitySearch() {
                     key={entry}
                     type="button"
                     onClick={() => getCitySearchWeather(entry)}
-                    className="tw-chip-min"
+                    className="tw-recent-pill"
                   >
                     {entry}
                   </button>
@@ -548,9 +548,187 @@ export default function CitySearch() {
                   {weatherData.current.condition.text}
                 </p>
               </div>
+            </div>
+          </section>
 
-              <div className="tw-card-shell tw-card-secondary tw-quick-summary p-5 md:p-6">
-                <p className="tw-section-kicker">Quick Summary</p>
+          <section className="tw-section-shell">
+            <div className="tw-tier-supporting">
+              <div className="tw-card-shell tw-card-primary p-4 md:p-6">
+                <p className="tw-section-kicker">Trail Readiness</p>
+                <div className="tw-readiness-row mt-4 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 md:items-start">
+                  <div
+                    className="tw-readiness-gauge-panel flex w-full flex-col items-stretch gap-5 py-2"
+                    aria-label={`Run readiness ${trailReadiness.score} out of 100, ${trailReadiness.label}`}
+                  >
+                    <div className="tw-readiness-spectrum w-full space-y-4">
+                      <div className="text-left">
+                        <p className="text-4xl font-bold tabular-nums leading-none tracking-tight md:text-5xl">
+                          {trailReadiness.score}
+                          <span className="text-xl font-semibold text-base-content/45 md:text-2xl">
+                            /100
+                          </span>
+                        </p>
+                        <span
+                          className={`mt-3 inline-flex tw-chip-min text-sm font-semibold md:text-base ${levelClasses[trailReadiness.label] || "tw-status-safe"}`}
+                        >
+                          {trailReadiness.label}
+                        </span>
+                      </div>
+
+                      <div>
+                        <p className="mb-2 text-left text-xs font-medium text-base-content/55">
+                          Where your score falls (0–55 poor · 55–75 fair · 75+
+                          great)
+                        </p>
+                        <div className="relative px-0.5 pt-1">
+                          <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-base-content/15">
+                            <div
+                              className="min-w-0 flex-[55] bg-error/35"
+                              title="Poor zone: 0–55"
+                            />
+                            <div
+                              className="min-w-0 flex-[20] bg-warning/35"
+                              title="Fair zone: 55–75"
+                            />
+                            <div
+                              className="min-w-0 flex-[25] bg-success/35"
+                              title="Great zone: 75–100"
+                            />
+                          </div>
+                          <div
+                            className={`tw-readiness-spectrum-marker ${
+                              trailReadiness.label === "Great"
+                                ? "tw-readiness-spectrum-marker--great"
+                                : trailReadiness.label === "Fair"
+                                  ? "tw-readiness-spectrum-marker--fair"
+                                  : "tw-readiness-spectrum-marker--poor"
+                            }`}
+                            style={{
+                              left: `${Math.min(100, Math.max(0, trailReadiness.score))}%`,
+                            }}
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="mt-2 grid grid-cols-[55fr_20fr_25fr] gap-0.5 text-center text-[10px] font-bold uppercase leading-tight tracking-wide">
+                          <span className="text-error">Poor</span>
+                          <span className="text-warning">Fair</span>
+                          <span className="text-success">Great</span>
+                        </div>
+                        <div className="mt-1 flex justify-between px-0.5 font-mono text-[10px] tabular-nums text-base-content/45">
+                          <span>0</span>
+                          <span>55</span>
+                          <span>75</span>
+                          <span>100</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="max-w-md text-left text-xs text-base-content/55">
+                      One number from rain, wind, UV, and temperature
+                      comfort—higher is generally better for easy trail miles.
+                    </p>
+                  </div>
+
+                  <div className="min-w-0 md:border-l md:border-base-content/10 md:pl-10">
+                    <div className="tw-flat-list gap-0">
+                      {riskCards.map((card) => (
+                        <div
+                          key={card.title}
+                          className="tw-flat-row flex flex-col gap-2 border-b border-base-content/10 py-3 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                        >
+                          <div className="flex min-w-0 items-start gap-2.5">
+                            <span className="mt-0.5 text-base-content/80">
+                              {card.icon}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold leading-snug">
+                                {card.title}
+                              </p>
+                              <p className="mt-0.5 text-xs text-base-content/65">
+                                {card.detail}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end sm:text-right">
+                            <span
+                              className={`tw-chip-min ${levelClasses[card.level] || "tw-status-safe"}`}
+                            >
+                              {card.level}
+                            </span>
+                            <p className="text-sm font-semibold tabular-nums">
+                              {card.value}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="tw-card-shell tw-card-secondary mt-4 p-4 md:p-5 md:mt-5">
+                <p className="tw-section-kicker">Run Window (Next 8 Hours)</p>
+                <div className="tw-run-window-table mt-3">
+                  <div
+                    className="tw-run-window-header grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 px-1"
+                    role="row"
+                  >
+                    <span className="tw-run-window-th" role="columnheader">
+                      Time
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Temp
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Rain
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Wind
+                    </span>
+                  </div>
+                  <div
+                    className="tw-flat-list tw-run-window-body"
+                    role="rowgroup"
+                  >
+                    {nextHours.map((hour, index) => (
+                      <div
+                        key={hour.time}
+                        role="row"
+                        className={`tw-flat-row grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base ${
+                          index === bestRunWindowIndex ? "tw-highlight-row" : ""
+                        }`}
+                      >
+                        <span className="font-medium">
+                          {index === 0
+                            ? "Now"
+                            : convertTo12HourFormat(hour.time.split(" ")[1])}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          {displayTemp(hour.temp_f, hour.temp_c)}
+                          <img
+                            className="inline h-8 w-8"
+                            alt="Weather condition"
+                            aria-hidden="true"
+                            src={hour.condition.icon}
+                          />
+                        </span>
+                        <span className="text-base-content/80">
+                          {hour.chance_of_rain}%
+                        </span>
+                        <span className="text-base-content/80">
+                          {hour.wind_dir} {Math.round(hour.wind_mph)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-base-content/65">
+                  Highlight shows the lowest rain + wind combination in this
+                  window.
+                </p>
+              </div>
+
+              <div className="tw-card-shell tw-card-secondary tw-quick-summary mt-4 p-5 md:mt-5 md:p-6">
+                <p className="tw-section-kicker">Today&apos;s Summary</p>
                 <div className="tw-quick-summary-body">
                   <div className="tw-quick-summary-block">
                     <p className="tw-quick-summary-label">At a glance</p>
@@ -638,176 +816,6 @@ export default function CitySearch() {
             </div>
           </section>
 
-          <section className="tw-section-shell">
-            <div className="tw-tier-supporting">
-              <div className="tw-card-shell tw-card-primary p-4 md:p-6">
-                <p className="tw-section-kicker">Trail Readiness</p>
-                <div className="tw-readiness-row mt-4 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 md:items-stretch">
-                  <div className="min-w-0">
-                    <div className="tw-flat-list">
-                      {riskCards.map((card) => (
-                        <div key={card.title} className="tw-flat-row">
-                          <div className="flex min-w-0 items-center gap-2">
-                            {card.icon}
-                            <p className="text-sm font-semibold">
-                              {card.title}
-                            </p>
-                          </div>
-                          <div className="ml-auto text-right">
-                            <span
-                              className={`tw-chip-min ${levelClasses[card.level] || "tw-status-safe"}`}
-                            >
-                              {card.level}
-                            </span>
-                            <p className="mt-1 text-sm font-semibold">
-                              {card.value}
-                            </p>
-                            <p className="text-xs text-base-content/70">
-                              {card.detail}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div
-                    className="tw-readiness-gauge-panel flex w-full flex-col items-center justify-center gap-5 py-2"
-                    aria-label={`Run readiness ${trailReadiness.score} out of 100, ${trailReadiness.label}`}
-                  >
-                    <div className="tw-readiness-spectrum w-full max-w-md space-y-4">
-                      <div className="text-center">
-                        <p className="text-4xl font-bold tabular-nums leading-none tracking-tight md:text-5xl">
-                          {trailReadiness.score}
-                          <span className="text-xl font-semibold text-base-content/45 md:text-2xl">
-                            /100
-                          </span>
-                        </p>
-                        <span
-                          className={`mt-3 tw-chip-min text-sm font-semibold md:text-base ${levelClasses[trailReadiness.label] || "tw-status-safe"}`}
-                        >
-                          {trailReadiness.label}
-                        </span>
-                      </div>
-
-                      <div>
-                        <p className="mb-2 text-center text-xs font-medium text-base-content/55">
-                          Where your score falls (0–55 poor · 55–75 fair · 75+
-                          great)
-                        </p>
-                        <div className="relative px-0.5 pt-1">
-                          <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-base-content/15">
-                            <div
-                              className="min-w-0 flex-[55] bg-error/35"
-                              title="Poor zone: 0–55"
-                            />
-                            <div
-                              className="min-w-0 flex-[20] bg-warning/35"
-                              title="Fair zone: 55–75"
-                            />
-                            <div
-                              className="min-w-0 flex-[25] bg-success/35"
-                              title="Great zone: 75–100"
-                            />
-                          </div>
-                          <div
-                            className={`tw-readiness-spectrum-marker ${
-                              trailReadiness.label === "Great"
-                                ? "tw-readiness-spectrum-marker--great"
-                                : trailReadiness.label === "Fair"
-                                  ? "tw-readiness-spectrum-marker--fair"
-                                  : "tw-readiness-spectrum-marker--poor"
-                            }`}
-                            style={{
-                              left: `${Math.min(100, Math.max(0, trailReadiness.score))}%`,
-                            }}
-                            aria-hidden="true"
-                          />
-                        </div>
-                        <div className="mt-2 grid grid-cols-[55fr_20fr_25fr] gap-0.5 text-center text-[10px] font-bold uppercase leading-tight tracking-wide">
-                          <span className="text-error">Poor</span>
-                          <span className="text-warning">Fair</span>
-                          <span className="text-success">Great</span>
-                        </div>
-                        <div className="mt-1 flex justify-between px-0.5 font-mono text-[10px] tabular-nums text-base-content/45">
-                          <span>0</span>
-                          <span>55</span>
-                          <span>75</span>
-                          <span>100</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="max-w-sm text-center text-xs text-base-content/55">
-                      One number from rain, wind, UV, and temperature
-                      comfort—higher is generally better for easy trail miles.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="tw-card-shell tw-card-secondary mt-4 p-4 md:p-5 md:mt-5">
-                <p className="tw-section-kicker">Run Window (Next 8 Hours)</p>
-                <div className="tw-run-window-table mt-3">
-                  <div
-                    className="tw-run-window-header grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 px-1"
-                    role="row"
-                  >
-                    <span className="tw-run-window-th" role="columnheader">
-                      Time
-                    </span>
-                    <span className="tw-run-window-th" role="columnheader">
-                      Temp
-                    </span>
-                    <span className="tw-run-window-th" role="columnheader">
-                      Rain
-                    </span>
-                    <span className="tw-run-window-th" role="columnheader">
-                      Wind
-                    </span>
-                  </div>
-                  <div
-                    className="tw-flat-list tw-run-window-body"
-                    role="rowgroup"
-                  >
-                    {nextHours.map((hour, index) => (
-                      <div
-                        key={hour.time}
-                        role="row"
-                        className={`tw-flat-row grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base ${
-                          index === bestRunWindowIndex ? "tw-highlight-row" : ""
-                        }`}
-                      >
-                        <span className="font-medium">
-                          {index === 0
-                            ? "Now"
-                            : convertTo12HourFormat(hour.time.split(" ")[1])}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          {displayTemp(hour.temp_f, hour.temp_c)}
-                          <img
-                            className="inline h-8 w-8"
-                            alt="Weather condition"
-                            aria-hidden="true"
-                            src={hour.condition.icon}
-                          />
-                        </span>
-                        <span className="text-base-content/80">
-                          {hour.chance_of_rain}%
-                        </span>
-                        <span className="text-base-content/80">
-                          {hour.wind_dir} {Math.round(hour.wind_mph)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-base-content/65">
-                  Highlight shows the lowest rain + wind combination in this
-                  window.
-                </p>
-              </div>
-            </div>
-          </section>
-
           <section className="tw-section-shell tw-section-day-outlook">
             <p className="tw-section-kicker">3 Day outlook</p>
             <div className="tw-forecast-grid">
@@ -825,21 +833,21 @@ export default function CitySearch() {
                         ? "Today"
                         : formatForecastDayDate(forecastday.date)}
                     </p>
+                  </div>
+                  <div className="tw-forecast-day-condition">
+                    <p className="inline-flex min-w-0 items-center gap-2 text-base leading-snug">
+                      {forecastday.day.condition.text}
+                      <img
+                        className="h-12 w-12 shrink-0"
+                        alt=""
+                        aria-hidden="true"
+                        src={forecastday.day.condition.icon}
+                      />
+                    </p>
                     <span className="inline-flex items-center gap-1.5 text-sm text-base-content/75">
                       <Compass className="h-4 w-4 shrink-0" />
                       {Math.round(forecastday.day.maxwind_mph)} mph
                     </span>
-                  </div>
-                  <div className="tw-forecast-day-condition">
-                    <p className="min-w-0 flex-1 text-base leading-snug">
-                      {forecastday.day.condition.text}
-                    </p>
-                    <img
-                      className="h-12 w-12 shrink-0"
-                      alt=""
-                      aria-hidden="true"
-                      src={forecastday.day.condition.icon}
-                    />
                   </div>
                   <div className="tw-forecast-day-stats">
                     <div className="tw-forecast-stat">

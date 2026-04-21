@@ -216,11 +216,11 @@ body {
   }
 
   .tw-forecast-day-condition {
-    @apply flex items-center justify-between gap-4;
+    @apply flex items-center justify-evenly gap-4;
   }
 
   .tw-forecast-day-stats {
-    @apply grid grid-cols-3 gap-3 border-t border-base-content/10 pt-4 md:gap-4 md:pt-5;
+    @apply flex justify-evenly gap-4 border-t border-base-content/10 pt-4 md:gap-4 md:pt-5;
   }
 
   .tw-forecast-stat {
@@ -330,9 +330,12 @@ body {
   }
 
   .tw-input-outlined {
-    @apply w-full bg-base-100/80 px-3 py-2 text-base outline-none;
-    border: 2px solid color-mix(in oklab, var(--bc), transparent 45%);
-    box-shadow: 0 0 0 1px color-mix(in oklab, var(--bc), transparent 80%);
+    @apply w-full px-3 py-2.5 text-base outline-none;
+    background-color: color-mix(in oklab, var(--b1), transparent 6%);
+    border: 2px solid color-mix(in oklab, var(--bc), transparent 22%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%),
+      0 0 0 1px color-mix(in oklab, var(--bc), transparent 75%);
     transition:
       border-color 150ms ease,
       box-shadow 150ms ease,
@@ -340,8 +343,10 @@ body {
   }
 
   .tw-input-outlined:focus {
-    border-color: var(--p);
-    box-shadow: 0 0 0 2px color-mix(in oklab, var(--p), transparent 70%);
+    border-color: color-mix(in oklab, var(--p), transparent 15%);
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--p), transparent 78%),
+      inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%);
   }
 
   .tw-btn-min {
@@ -361,7 +366,11 @@ body {
   }
 
   .tw-recents-label {
-    @apply text-sm font-semibold text-base-content/70;
+    @apply shrink-0 text-sm font-semibold text-base-content/70;
+  }
+
+  .tw-recent-pill {
+    @apply inline-flex max-w-full items-center rounded-full border border-base-content/20 bg-base-100/70 px-3.5 py-1.5 text-sm font-medium text-base-content shadow-sm transition-colors hover:border-primary/45 hover:bg-primary/10 hover:text-primary;
   }
 
   .tw-status-safe {

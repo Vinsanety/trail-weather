@@ -1,7 +1,12 @@
 export default function Footer() {
   return (
-    <footer className="footer p-8 text-base-content border-t-2 border-neutral">
-      <p>© {new Date().getFullYear()} Vahala Designs</p>
+    <footer className="mt-10 bg-transparent px-4 py-6 text-sm text-base-content/70 md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 sm:flex-row">
+        <p>© {new Date().getFullYear()} Vahala</p>
+        <p className="text-center">
+          Weather insights for better trail decisions.
+        </p>
+      </div>
     </footer>
   );
 }

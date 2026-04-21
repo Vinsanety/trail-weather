@@ -3,41 +3,384 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --tw-modern-bg-light:
+    radial-gradient(
+      circle at 15% 15%,
+      rgb(167 243 208 / 0.45),
+      transparent 40%
+    ),
+    radial-gradient(circle at 85% 0%, rgb(191 219 254 / 0.35), transparent 35%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  --tw-modern-bg-dark:
+    radial-gradient(circle at 20% 10%, rgb(29 78 216 / 0.35), transparent 35%),
+    radial-gradient(circle at 85% 0%, rgb(8 145 178 / 0.25), transparent 30%),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  --tw-surface-1: color-mix(in oklab, var(--b1), white 8%);
+  --tw-surface-2: color-mix(in oklab, var(--b2), white 3%);
+  --tw-surface-3: color-mix(in oklab, var(--b3), black 4%);
+  --tw-text-primary: var(--bc);
+  --tw-text-secondary: color-mix(in oklab, var(--bc), transparent 25%);
+  --tw-text-muted: color-mix(in oklab, var(--bc), transparent 40%);
+  --tw-border-subtle: color-mix(in oklab, var(--bc), transparent 82%);
+  --tw-status-safe: var(--su);
+  --tw-status-fair: var(--wa);
+  --tw-status-caution: var(--er);
 }
 
-@media (prefers-color-scheme: night) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-/* When DaisyUI emerald theme is active */
-html[data-theme="emerald"],
-body[data-theme="emerald"] {
+html[data-theme="trail_light"],
+body[data-theme="trail_light"] {
   color: black;
+  background: var(--tw-modern-bg-light);
+  min-height: 100%;
 }
 
-/* When DaisyUI night theme is active */
-html[data-theme="night"],
-body[data-theme="night"] {
+html[data-theme="trail_dark"],
+body[data-theme="trail_dark"] {
   color: white;
+  background: var(--tw-modern-bg-dark);
+  min-height: 100%;
 }
 
-* {
-  font-size: 1rem;
+html[data-theme="alpine_accent"],
+body[data-theme="alpine_accent"] {
+  color: var(--tw-text-primary);
+  background:
+    radial-gradient(circle at 20% 0%, rgb(124 58 237 / 0.16), transparent 45%),
+    linear-gradient(180deg, #f7f5ff 0%, #ede9fe 100%);
+  min-height: 100%;
 }
 
 body {
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .tw-dashboard-shell {
+    @apply bg-base-100/20 py-6 md:py-7;
+  }
+
+  .tw-card-shell {
+    @apply bg-base-100/20 py-3;
+  }
+
+  .tw-page-grid {
+    @apply grid grid-cols-1 gap-6 md:gap-8;
+  }
+
+  .tw-content-band {
+    @apply rounded-lg border border-base-content/10 bg-base-100/25 p-4 md:p-5;
+  }
+
+  .tw-section-shell {
+    @apply grid grid-cols-1 gap-5;
+  }
+
+  .tw-section-day-outlook {
+    @apply border-t border-base-content/10 pt-8 md:pt-10;
+  }
+
+  .tw-section-content-grid {
+    @apply grid grid-cols-1 gap-4 md:gap-6;
+  }
+
+  .tw-hero-shell {
+    @apply bg-base-100/30 p-5 md:p-7;
+  }
+
+  .tw-hero-grid {
+    @apply grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-[1.3fr_0.9fr];
+  }
+
+  .tw-hero-location {
+    @apply text-3xl font-semibold tracking-tight md:text-4xl;
+  }
+
+  .tw-card-primary {
+    @apply bg-base-100/30;
+  }
+
+  .tw-card-secondary {
+    @apply bg-base-100/20;
+  }
+
+  .tw-section-title {
+    @apply text-2xl font-semibold tracking-tight md:text-3xl;
+  }
+
+  .tw-section-kicker {
+    @apply text-sm font-semibold uppercase tracking-[0.12em] text-base-content/60;
+  }
+
+  .tw-card-title {
+    @apply mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-base-content/60;
+  }
+
+  .tw-section-divider {
+    @apply h-px bg-base-content/10;
+  }
+
+  .tw-section-band {
+    @apply bg-base-100/20 py-4 md:py-5;
+  }
+
+  .tw-tier-primary {
+    @apply bg-base-100/25 py-4 md:py-5;
+  }
+
+  .tw-tier-secondary {
+    @apply bg-base-100/25 py-4 md:py-5;
+  }
+
+  .tw-tier-supporting {
+    @apply bg-base-100/10 py-4 md:py-5;
+  }
+
+  .tw-heading-primary {
+    @apply text-3xl font-semibold tracking-tight md:text-4xl;
+  }
+
+  .tw-heading-secondary {
+    @apply text-xl font-semibold tracking-tight md:text-2xl;
+  }
+
+  .tw-heading-supporting {
+    @apply text-lg font-semibold tracking-tight md:text-xl;
+  }
+
+  .tw-value-primary {
+    @apply text-6xl font-bold leading-none md:text-8xl;
+  }
+
+  .tw-eyebrow {
+    @apply mb-1 text-sm font-semibold uppercase tracking-[0.12em];
+    color: var(--tw-text-muted);
+  }
+
+  .tw-card-table {
+    @apply overflow-hidden bg-transparent;
+  }
+
+  .tw-metric-chip {
+    @apply flex flex-col p-1;
+  }
+
+  .tw-metric-chip span {
+    @apply text-sm uppercase tracking-wide text-base-content/70;
+  }
+
+  .tw-metric-chip strong {
+    @apply mt-1 text-base font-semibold;
+  }
+
+  .tw-metric-row {
+    @apply flex items-center gap-2 py-1.5;
+  }
+
+  .tw-metric-row strong {
+    @apply ml-auto text-base font-semibold;
+  }
+
+  .tw-flat-list {
+    @apply grid gap-1.5;
+  }
+
+  .tw-flat-row {
+    @apply px-1 py-1.5;
+  }
+
+  .tw-highlight-row {
+    background: color-mix(in oklab, var(--p), transparent 87%);
+    border-left: 2px solid var(--p);
+    padding-left: 0.75rem;
+  }
+
+  .tw-forecast-today {
+    background: color-mix(in oklab, var(--p), transparent 88%);
+    border-color: color-mix(in oklab, var(--p), transparent 55%);
+  }
+
+  .tw-forecast-grid {
+    @apply grid gap-5 sm:gap-6 md:grid-cols-3 md:gap-8;
+  }
+
+  .tw-forecast-day {
+    @apply flex flex-col gap-5 rounded-xl border border-base-content/10 bg-base-100/15 p-5 md:gap-6 md:p-6;
+  }
+
+  .tw-forecast-day-header {
+    @apply flex flex-wrap items-start justify-between gap-3 border-b border-base-content/10 pb-4;
+  }
+
+  .tw-forecast-day-condition {
+    @apply flex items-center justify-evenly gap-4;
+  }
+
+  .tw-forecast-day-stats {
+    @apply flex justify-evenly gap-4 border-t border-base-content/10 pt-4 md:gap-4 md:pt-5;
+  }
+
+  .tw-forecast-stat {
+    @apply flex min-w-0 flex-col gap-1;
+  }
+
+  .tw-forecast-stat-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-base-content/50;
+  }
+
+  .tw-forecast-stat-value {
+    @apply text-base font-semibold tabular-nums md:text-lg;
+  }
+
+  .tw-run-window-header {
+    @apply mt-3 border-b border-base-content/10 bg-base-200/40;
+  }
+
+  .tw-run-window-th {
+    @apply py-2.5 text-xs font-bold uppercase tracking-wide text-base-content/55 first:pl-3 last:pr-3;
+  }
+
+  .tw-run-window-body {
+    @apply px-1 py-1;
+  }
+
+  /* Spectrum bar marker (score pin on 0–100 scale) */
+  .tw-readiness-spectrum-marker {
+    @apply pointer-events-none absolute top-1/2 h-7 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-md ring-2 ring-base-100;
+  }
+
+  .tw-readiness-spectrum-marker--poor {
+    background-color: oklch(var(--er));
+  }
+
+  .tw-readiness-spectrum-marker--fair {
+    background-color: oklch(var(--wa));
+  }
+
+  .tw-readiness-spectrum-marker--great {
+    background-color: oklch(var(--su));
+  }
+
+  .tw-readiness-gauge-panel {
+    @apply rounded-xl border border-base-content/10 bg-base-100/15 px-4 py-6 md:px-6;
+  }
+
+  .tw-readiness-row {
+    @apply w-full;
+  }
+
+  .tw-unit-toggle-group {
+    @apply inline-flex rounded-full border border-base-content/15 bg-base-200/40 p-1;
+  }
+
+  .tw-unit-toggle {
+    @apply min-w-[3.25rem] rounded-full px-4 py-2 text-sm font-semibold tracking-wide transition-colors;
+  }
+
+  .tw-unit-toggle--active {
+    @apply bg-base-100 text-primary shadow-sm;
+  }
+
+  .tw-unit-toggle:not(.tw-unit-toggle--active) {
+    @apply text-base-content/60 hover:text-base-content;
+  }
+
+  .tw-quick-summary-body {
+    @apply mt-4 space-y-6;
+  }
+
+  .tw-quick-summary-block:not(:last-child) {
+    @apply border-b border-base-content/10 pb-6;
+  }
+
+  .tw-quick-summary-label {
+    @apply mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-base-content/45;
+  }
+
+  .tw-quick-summary-grid {
+    @apply grid grid-cols-2 gap-3 lg:grid-cols-4;
+  }
+
+  .tw-quick-summary-grid--pair {
+    @apply max-w-xl grid-cols-2;
+  }
+
+  .tw-quick-summary-grid--sky {
+    @apply grid-cols-1 sm:grid-cols-3;
+  }
+
+  .tw-quick-summary-metric {
+    @apply rounded-lg bg-base-200/35 px-3 py-2.5;
+  }
+
+  .tw-input-min {
+    @apply w-full bg-base-200/40 px-3 py-2 text-sm outline-none;
+  }
+
+  .tw-input-lined {
+    @apply w-full bg-transparent px-0 py-2 text-base outline-none;
+    border-bottom: 1px solid color-mix(in oklab, var(--bc), transparent 65%);
+  }
+
+  .tw-input-lined:focus {
+    border-bottom-color: var(--p);
+  }
+
+  /* Use @apply for borders so Tailwind emits real border-width/color utilities.
+     A raw `border: … color-mix(…)` can be dropped as invalid in some cases, which
+     leaves preflight’s `border-width: 0` on `*` — so the field looked borderless. */
+  .tw-input-outlined {
+    @apply w-full rounded-lg border-2 border-solid border-base-content/35 px-3 py-2.5 text-base outline-none transition-[border-color,box-shadow,background-color] duration-150 ease-out;
+    background-color: color-mix(in oklab, var(--b1), transparent 6%);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%);
+  }
+
+  .tw-input-outlined:focus {
+    @apply border-primary;
+    box-shadow:
+      0 0 0 3px color-mix(in oklab, var(--p), transparent 78%),
+      inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%);
+  }
+
+  .tw-btn-min {
+    @apply inline-flex items-center justify-center gap-2 bg-base-200/50 px-3 py-2 text-base font-medium transition-colors hover:bg-base-200/80;
+  }
+
+  .tw-btn-min-primary {
+    @apply bg-primary/15 text-primary hover:bg-primary/25;
+  }
+
+  .tw-chip-min {
+    @apply inline-flex items-center bg-base-200/55 px-2.5 py-1 text-sm;
+  }
+
+  .tw-recents-row {
+    @apply mt-3 flex flex-wrap items-center gap-2;
+  }
+
+  .tw-recents-label {
+    @apply shrink-0 text-sm font-semibold text-base-content/70;
+  }
+
+  .tw-recent-pill {
+    @apply inline-flex max-w-full items-center rounded-full border border-base-content/20 bg-base-100/70 px-3.5 py-1.5 text-sm font-medium text-base-content shadow-sm transition-colors hover:border-primary/45 hover:bg-primary/10 hover:text-primary;
+  }
+
+  .tw-status-safe {
+    background: color-mix(in oklab, var(--tw-status-safe), transparent 84%);
+    color: var(--tw-status-safe);
+  }
+
+  .tw-status-fair {
+    background: color-mix(in oklab, var(--tw-status-fair), transparent 84%);
+    color: var(--tw-status-fair);
+  }
+
+  .tw-status-caution {
+    background: color-mix(in oklab, var(--tw-status-caution), transparent 84%);
+    color: var(--tw-status-caution);
   }
 }

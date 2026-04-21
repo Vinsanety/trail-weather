@@ -1,11 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  CalendarDays,
   CloudRain,
-  Droplets,
+  Compass,
+  Eye,
+  LocateFixed,
   Moon,
-  Snowflake,
+  Search,
   Sun,
   Sunrise,
   Sunset,
@@ -13,7 +16,31 @@ import {
 } from "lucide-react";
 
 interface WeatherData {
-  forecast: any;
+  forecast: {
+    forecastday: Array<{
+      date: string;
+      day: {
+        maxtemp_f: number;
+        mintemp_f: number;
+        maxtemp_c: number;
+        mintemp_c: number;
+        avgtemp_f: number;
+        avgtemp_c: number;
+        condition: { text: string; icon: string };
+        daily_chance_of_rain: number;
+        daily_chance_of_snow: number;
+        maxwind_mph: number;
+      };
+      astro: {
+        sunrise: string;
+        sunset: string;
+        moon_phase: string;
+        moonrise: string;
+        moonset: string;
+      };
+      hour: HourForecast[];
+    }>;
+  };
   location: {
     region: string;
     name: string;
@@ -22,6 +49,7 @@ interface WeatherData {
     uv: number;
     gust_mph: number;
     feelslike_f: number;
+    feelslike_c: number;
     humidity: number;
     wind_dir: string;
     wind_mph: number;
@@ -30,30 +58,77 @@ interface WeatherData {
       text: string;
     };
     temp_f: number;
+    temp_c: number;
+    pressure_in: number;
+    vis_miles: number;
+  };
+}
+
+interface HourForecast {
+  time: string;
+  temp_f: number;
+  temp_c: number;
+  chance_of_rain: number;
+  wind_dir: string;
+  wind_mph: number;
+  condition: {
+    icon: string;
   };
 }
 
 const API_KEY = `${process.env.NEXT_PUBLIC_WEATHER_API_KEY}`;
+const RECENT_SEARCHES_KEY = "trail-weather-recent-searches";
 
 export default function CitySearch() {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [unit, setUnit] = useState<"F" | "C">("F");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   // Ref for Current Conditions section
   const currentConditionsRef = useRef<HTMLDivElement | null>(null);
 
-  const getCitySearchWeather = async () => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (!saved) return;
     try {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        setRecentSearches(parsed.filter((item) => typeof item === "string"));
+      }
+    } catch (error) {
+      console.error("Failed to parse recent searches", error);
+    }
+  }, []);
+
+  const getCitySearchWeather = async (query: string) => {
+    if (!query.trim()) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
       const response = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=3`
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(
+          query,
+        )}&days=3`,
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: WeatherData = await response.json();
       setWeatherData(data);
+      setCity(query);
       setErrorMsg("");
-      console.log(data);
+
+      const updatedRecent = [
+        query,
+        ...recentSearches.filter((entry) => entry !== query),
+      ].slice(0, 5);
+      setRecentSearches(updatedRecent);
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updatedRecent));
 
       // Scroll to Current Conditions after data loads
       setTimeout(() => {
@@ -65,7 +140,24 @@ export default function CitySearch() {
     } catch (error) {
       console.error(error);
       setErrorMsg('Please try again with a valid "City, State", or Zip Code.');
+      setWeatherData(null);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const getWeatherForCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      setErrorMsg("Geolocation is not supported in this browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        await getCitySearchWeather(`${coords.latitude},${coords.longitude}`);
+      },
+      () => setErrorMsg("Unable to retrieve your location right now."),
+    );
   };
 
   // Current Day
@@ -101,41 +193,259 @@ export default function CitySearch() {
 
   // Find current hour index
   const currentHourIndex = weatherData?.forecast.forecastday[0].hour.findIndex(
-    (hour: any) => {
+    (hour: HourForecast) => {
       const hourTime = new Date(hour.time);
       return hourTime.getHours() === date.getHours();
-    }
+    },
   );
 
   // Format Date: 2024-01-01 format and converts to Jan 1 (used in 3 Day Forecast Table)
-  function formatForecastDayDate(inputDate: any) {
+  function formatForecastDayDate(inputDate: string) {
     const [year, month, day] = inputDate.split("-");
     const monthAbbreviation = months[parseInt(month) - 1];
     const formattedDate = `${monthAbbreviation} ${parseInt(day)}`;
     return formattedDate;
   }
 
+  const trailReadiness = useMemo(() => {
+    if (!weatherData) return null;
+
+    const rain = weatherData.forecast.forecastday[0].day.daily_chance_of_rain;
+    const wind = weatherData.current.wind_mph;
+    const uv = weatherData.current.uv;
+    const temperature =
+      unit === "F" ? weatherData.current.temp_f : weatherData.current.temp_c;
+
+    let score = 100 - rain * 0.6 - wind * 1.5 - uv * 2;
+    if (temperature < (unit === "F" ? 40 : 4)) score -= 12;
+    if (temperature > (unit === "F" ? 90 : 32)) score -= 15;
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    const label = score >= 75 ? "Great" : score >= 55 ? "Fair" : "Poor";
+    return { score, label };
+  }, [weatherData, unit]);
+
+  const riskCards = useMemo(() => {
+    if (!weatherData) return [];
+
+    const rainChance =
+      weatherData.forecast.forecastday[0].day.daily_chance_of_rain;
+    const windSpeed = Math.round(weatherData.current.wind_mph);
+    const uv = weatherData.current.uv;
+    const visibility = weatherData.current.vis_miles;
+
+    const getLevel = (value: number, safe: number, fairMax: number) => {
+      if (value <= safe) return "Safe";
+      if (value <= fairMax) return "Fair";
+      return "Poor";
+    };
+
+    return [
+      {
+        title: "Footing Risk",
+        value: `${rainChance}%`,
+        detail: "Chance of wet or slick trail sections",
+        level: getLevel(rainChance, 30, 60),
+        icon: <CloudRain className="h-5 w-5" />,
+      },
+      {
+        title: "Wind Exposure",
+        value: `${windSpeed} mph`,
+        detail: `Wind from ${weatherData.current.wind_dir}`,
+        level: getLevel(windSpeed, 12, 20),
+        icon: <Wind className="h-5 w-5" />,
+      },
+      {
+        title: "Heat/UV Load",
+        value: `${uv} / 11`,
+        detail: "Sun stress during your run window",
+        level: getLevel(uv, 3, 6),
+        icon: <Sun className="h-5 w-5" />,
+      },
+      {
+        title: "Visibility",
+        value: `${visibility} mi`,
+        detail: "Distance clarity",
+        level: visibility >= 8 ? "Safe" : visibility >= 4 ? "Fair" : "Poor",
+        icon: <Eye className="h-5 w-5" />,
+      },
+    ];
+  }, [weatherData]);
+
+  const nextHours = useMemo(() => {
+    if (!weatherData || currentHourIndex === undefined || currentHourIndex < 0)
+      return [];
+
+    const todayHours = weatherData.forecast.forecastday[0].hour.slice(
+      currentHourIndex,
+      currentHourIndex + 8,
+    );
+    if (todayHours.length >= 8) return todayHours;
+
+    const needed = 8 - todayHours.length;
+    return [
+      ...todayHours,
+      ...weatherData.forecast.forecastday[1].hour.slice(0, needed),
+    ];
+  }, [weatherData, currentHourIndex]);
+
+  const bestRunWindowIndex = useMemo(() => {
+    if (!nextHours.length) return -1;
+    let bestIndex = 0;
+    let bestScore = Number.POSITIVE_INFINITY;
+
+    nextHours.forEach((hour, index) => {
+      const score = hour.chance_of_rain * 1.6 + hour.wind_mph * 1.1;
+      if (score < bestScore) {
+        bestScore = score;
+        bestIndex = index;
+      }
+    });
+
+    return bestIndex;
+  }, [nextHours]);
+
+  const displayTemp = (f: number, c: number) =>
+    `${Math.round(unit === "F" ? f : c)}°${unit}`;
+
+  const levelClasses: Record<string, string> = {
+    Safe: "tw-status-safe",
+    Fair: "tw-status-fair",
+    Poor: "tw-status-caution",
+  };
+
   return (
-    <>
+    <div className="mx-auto w-full max-w-7xl px-2 pb-16 pt-2 sm:px-4 md:pb-20 md:pt-4">
       {/* Hero Section */}
-      <div className="hero mt-8 pt-4">
-        <div className="hero-content flex-col lg:flex-row">
-          <div className="text-center lg:text-left">
-            <h1 className="text-5xl font-bold">Trail Weather</h1>
-            <p className="py-3">
-              Search for a City, State or Zip Code to begin planning your next
-              trail adventure!
-            </p>
+      {!weatherData && (
+        <div className="tw-dashboard-shell p-6 md:p-8">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div className="text-center lg:text-left">
+              <p className="tw-eyebrow">Forecast Dashboard</p>
+              <h1 className="text-5xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+                Trail Weather
+              </h1>
+              <p className="mt-2 max-w-2xl text-lg text-base-content/85">
+                Plan your next trail run with quick-glance weather, footing risk
+                signals, and time-based condition changes.
+              </p>
+            </div>
+            <div className="tw-card-shell w-full p-4">
+              <form
+                className="space-y-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  getCitySearchWeather(city);
+                  setErrorMsg("");
+                }}
+              >
+                <div className="form-control gap-2">
+                  <label
+                    htmlFor="city-search-input"
+                    className="tw-eyebrow !mb-0"
+                  >
+                    City, State or Zip Code
+                  </label>
+                  <input
+                    id="city-search-input"
+                    className="tw-input-outlined"
+                    type="text"
+                    placeholder="i.e. Boulder, CO"
+                    onFocus={(e) => (e.target.placeholder = "")}
+                    onBlur={(e) => (e.target.placeholder = "i.e. Boulder, CO")}
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">
+                  <button
+                    className="tw-btn-min tw-btn-min-primary flex-1"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    <Search className="h-4 w-4" />
+                    {isLoading ? "Loading..." : "Get Forecast"}
+                  </button>
+                  <button
+                    className="tw-btn-min"
+                    type="button"
+                    onClick={getWeatherForCurrentLocation}
+                  >
+                    <LocateFixed className="h-4 w-4" />
+                    Near Me
+                  </button>
+                </div>
+              </form>
+              <div className="tw-recents-row">
+                <span className="tw-recents-label mr-1">Recent:</span>
+                {recentSearches.length ? (
+                  recentSearches.map((entry) => (
+                    <button
+                      key={entry}
+                      type="button"
+                      onClick={() => getCitySearchWeather(entry)}
+                      className="tw-chip-min"
+                    >
+                      {entry}
+                    </button>
+                  ))
+                ) : (
+                  <span className="text-sm text-base-content/60">
+                    No recent searches yet.
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="card shrink-0 w-full max-w-sm bg-base-100">
-            <form className="card-body">
-              <div className="form-control">
-                <label htmlFor="city-search-input" className="label">
-                  <span className="label-text">City, State or Zip Code</span>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {errorMsg && (
+        <div
+          role="alert"
+          className="alert alert-warning my-6 mx-auto max-w-3xl whitespace-pre-line"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <span className="pb-4 sm:pb-0">{errorMsg}</span>
+        </div>
+      )}
+
+      {/* Weather Data */}
+      {weatherData && !errorMsg && trailReadiness && (
+        <div className="tw-page-grid mt-6">
+          <section className="tw-content-band">
+            <form
+              className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end"
+              onSubmit={(e) => {
+                e.preventDefault();
+                getCitySearchWeather(city);
+                setErrorMsg("");
+              }}
+            >
+              <div className="form-control min-w-0 flex-1 gap-2">
+                <label
+                  htmlFor="city-search-input-inline"
+                  className="tw-eyebrow !mb-0"
+                >
+                  City, State or Zip Code
                 </label>
                 <input
-                  id="city-search-input"
-                  className="input input-primary p-6 border-2"
+                  id="city-search-input-inline"
+                  className="tw-input-outlined"
                   type="text"
                   placeholder="i.e. Boulder, CO"
                   onFocus={(e) => (e.target.placeholder = "")}
@@ -145,275 +455,416 @@ export default function CitySearch() {
                   required
                 />
               </div>
-              <div className="form-control mt-6">
+              <div className="flex flex-wrap gap-2 md:shrink-0">
                 <button
-                  className="btn btn-primary text-lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    getCitySearchWeather();
-                    setErrorMsg("");
-                  }}
+                  className="tw-btn-min tw-btn-min-primary flex-1 md:flex-none md:min-w-[10rem]"
+                  type="submit"
+                  disabled={isLoading}
                 >
-                  Send it
+                  <Search className="h-4 w-4" />
+                  {isLoading ? "Loading..." : "Get Forecast"}
+                </button>
+                <button
+                  className="tw-btn-min"
+                  type="button"
+                  onClick={getWeatherForCurrentLocation}
+                >
+                  <LocateFixed className="h-4 w-4" />
+                  Near Me
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      </div>
+            <div className="tw-recents-row mt-3">
+              <span className="tw-recents-label">Recent:</span>
+              {recentSearches.length ? (
+                recentSearches.map((entry) => (
+                  <button
+                    key={entry}
+                    type="button"
+                    onClick={() => getCitySearchWeather(entry)}
+                    className="tw-chip-min"
+                  >
+                    {entry}
+                  </button>
+                ))
+              ) : (
+                <span className="text-sm text-base-content/60">
+                  No recent searches yet.
+                </span>
+              )}
+            </div>
+          </section>
 
-      {/* Error Message */}
-      {errorMsg && (
-        <div
-          role="alert"
-          className="alert alert-warning my-4 lg:mt-24 mx-auto w-10/12 lg:w-6/12 whitespace-pre-line"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
+          <section
+            className="tw-hero-shell scroll-mt-8"
+            ref={currentConditionsRef}
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <span className="pb-4 sm:pb-0">{errorMsg}</span>
-        </div>
-      )}
-
-      {/* Weather Data */}
-      {weatherData && !errorMsg && (
-        <div
-          className="container mb-16 mx-auto scroll-mt-8"
-          ref={currentConditionsRef}
-        >
-          <h2 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-4xl">
-            {weatherData.location.name}, {weatherData.location.region}
-          </h2>
-          <hr className="my-6 mx-auto border-neutral" />
-          <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
-            Current Conditions
-          </h3>
-          <div className="columns-1 gap-4 lg:columns-2 grid lg:flex">
-            {/* Current Conditions Card */}
-            <div className="card mx-auto mb-2 lg:mb-8 w-5/6 lg:w-2/6 rounded-none border-2">
-              <div className="card-body">
-                <div className="flex justify-between flex-wrap gap-x-4">
-                  <p className="text-xl grow-0">
-                    {currentDay}, {currentMonth} {dayOfMonth}
+            <div className="mb-5 flex flex-wrap items-center justify-end">
+              <div className="tw-unit-toggle-group" role="group" aria-label="Temperature unit">
+                <button
+                  type="button"
+                  className={`tw-unit-toggle ${unit === "F" ? "tw-unit-toggle--active" : ""}`}
+                  onClick={() => setUnit("F")}
+                >
+                  °F
+                </button>
+                <button
+                  type="button"
+                  className={`tw-unit-toggle ${unit === "C" ? "tw-unit-toggle--active" : ""}`}
+                  onClick={() => setUnit("C")}
+                >
+                  °C
+                </button>
+              </div>
+            </div>
+            <div className="tw-hero-grid">
+              <div>
+                <p className="tw-section-kicker">Current Conditions</p>
+                <h2 className="tw-hero-location">
+                  {weatherData.location.name}, {weatherData.location.region}
+                </h2>
+                <p className="mt-2 text-base text-base-content/70">
+                  {currentDay}, {currentMonth} {dayOfMonth} - {currentTime}
+                </p>
+                <div className="mt-4 flex items-center gap-3">
+                  <p className="tw-value-primary">
+                    {displayTemp(
+                      weatherData.current.temp_f,
+                      weatherData.current.temp_c,
+                    )}
                   </p>
-                  <p className="text-xl grow-0">{currentTime}</p>
-                </div>
-                <p className="flex items-center justify-center mt-8 text-6xl font-bold">
-                  {Math.round(weatherData.current.temp_f)}°F
                   <img
                     alt="Weather condition"
                     aria-hidden="true"
                     src={weatherData.current.condition.icon}
+                    className="h-16 w-16 md:h-20 md:w-20"
                   />
-                </p>
-                <div className="mx-auto text-center">
-                  <p className="grow-0 text-lg">
-                    {weatherData.current.condition.text}
-                  </p>
-                  <p className="inline-flex grow-0 text-lg">
-                    <Wind /> {weatherData.current.wind_dir}{" "}
-                    {Math.round(weatherData.current.wind_mph)} mph
-                  </p>
                 </div>
-                <div className="flex justify-between w-full mt-16">
-                  <p>
-                    <b>High:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.forecast.forecastday[0].day.maxtemp_f}°F
-                    </span>
-                  </p>
-                  <p className="text-right">
-                    <b>Low:</b>{" "}
-                    <span className="text-base-content">
-                      {weatherData.forecast.forecastday[0].day.mintemp_f}°F
-                    </span>
-                  </p>
+                <p className="mt-2 text-xl font-semibold">
+                  {weatherData.current.condition.text}
+                </p>
+              </div>
+
+              <div className="tw-card-shell tw-card-secondary tw-quick-summary p-5 md:p-6">
+                <p className="tw-section-kicker">Quick Summary</p>
+                <div className="tw-quick-summary-body">
+                  <div className="tw-quick-summary-block">
+                    <p className="tw-quick-summary-label">At a glance</p>
+                    <div className="tw-quick-summary-grid">
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>Feels Like</span>
+                        <strong>
+                          {displayTemp(
+                            weatherData.current.feelslike_f,
+                            weatherData.current.feelslike_c,
+                          )}
+                        </strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>Wind</span>
+                        <strong>
+                          {weatherData.current.wind_dir}{" "}
+                          {Math.round(weatherData.current.wind_mph)} mph
+                        </strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>Humidity</span>
+                        <strong>{weatherData.current.humidity}%</strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>High / Low</span>
+                        <strong>
+                          {displayTemp(
+                            weatherData.forecast.forecastday[0].day.maxtemp_f,
+                            weatherData.forecast.forecastday[0].day.maxtemp_c,
+                          )}{" "}
+                          /{" "}
+                          {displayTemp(
+                            weatherData.forecast.forecastday[0].day.mintemp_f,
+                            weatherData.forecast.forecastday[0].day.mintemp_c,
+                          )}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tw-quick-summary-block">
+                    <p className="tw-quick-summary-label">Air and visibility</p>
+                    <div className="tw-quick-summary-grid tw-quick-summary-grid--pair">
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>Pressure</span>
+                        <strong>{weatherData.current.pressure_in} in</strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span>Visibility</span>
+                        <strong>{weatherData.current.vis_miles} mi</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tw-quick-summary-block">
+                    <p className="tw-quick-summary-label">Sun and moon</p>
+                    <div className="tw-quick-summary-grid tw-quick-summary-grid--sky">
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span className="inline-flex items-center gap-1">
+                          <Sunrise className="h-3.5 w-3.5 shrink-0" /> Sunrise
+                        </span>
+                        <strong className="font-semibold">
+                          {weatherData.forecast.forecastday[0].astro.sunrise}
+                        </strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span className="inline-flex items-center gap-1">
+                          <Sunset className="h-3.5 w-3.5 shrink-0" /> Sunset
+                        </span>
+                        <strong className="font-semibold">
+                          {weatherData.forecast.forecastday[0].astro.sunset}
+                        </strong>
+                      </div>
+                      <div className="tw-metric-chip tw-quick-summary-metric">
+                        <span className="inline-flex items-center gap-1">
+                          <Moon className="h-3.5 w-3.5 shrink-0" /> Moonrise
+                        </span>
+                        <strong className="font-semibold">
+                          {weatherData.forecast.forecastday[0].astro.moonrise}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            {/* 24Hour Forecast Table */}
-            <div className="card overflow-x-auto mb-2 lg:mb-8 mx-auto w-10/12 h-96 rounded-none">
-              <table className="table table-sm md:table-lg table-zebra table-pin-rows">
-                <thead>
-                  <tr>
-                    <th>Time</th>
-                    <th>Temp (°F)</th>
-                    <th>Rain (%)</th>
-                    <th className="hidden sm:table-cell">Wind</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {weatherData?.forecast.forecastday[0].hour
-                    .slice(currentHourIndex, currentHourIndex + 23)
-                    .map((hour: any, index: number) => (
-                      <tr key={hour.time}>
-                        <td>
+          </section>
+
+          <section className="tw-section-shell">
+            <div className="tw-tier-supporting">
+              <div className="tw-card-shell tw-card-primary p-4 md:p-6">
+                <p className="tw-section-kicker">Trail Readiness</p>
+                <div className="tw-readiness-row mt-4 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 md:items-stretch">
+                  <div className="min-w-0">
+                    <div className="tw-flat-list">
+                      {riskCards.map((card) => (
+                        <div key={card.title} className="tw-flat-row">
+                          <div className="flex min-w-0 items-center gap-2">
+                            {card.icon}
+                            <p className="text-sm font-semibold">{card.title}</p>
+                          </div>
+                          <div className="ml-auto text-right">
+                            <span
+                              className={`tw-chip-min ${levelClasses[card.level] || "tw-status-safe"}`}
+                            >
+                              {card.level}
+                            </span>
+                            <p className="mt-1 text-sm font-semibold">
+                              {card.value}
+                            </p>
+                            <p className="text-xs text-base-content/70">
+                              {card.detail}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div
+                    className="tw-readiness-gauge-panel flex w-full flex-col items-center justify-center gap-5 py-2"
+                    aria-label={`Run readiness ${trailReadiness.score} out of 100, ${trailReadiness.label}`}
+                  >
+                    <div className="tw-readiness-spectrum w-full max-w-md space-y-4">
+                      <div className="text-center">
+                        <p className="text-4xl font-bold tabular-nums leading-none tracking-tight md:text-5xl">
+                          {trailReadiness.score}
+                          <span className="text-xl font-semibold text-base-content/45 md:text-2xl">
+                            /100
+                          </span>
+                        </p>
+                        <span
+                          className={`mt-3 tw-chip-min text-sm font-semibold md:text-base ${levelClasses[trailReadiness.label] || "tw-status-safe"}`}
+                        >
+                          {trailReadiness.label}
+                        </span>
+                      </div>
+
+                      <div>
+                        <p className="mb-2 text-center text-xs font-medium text-base-content/55">
+                          Where your score falls (0–55 poor · 55–75 fair · 75+ great)
+                        </p>
+                        <div className="relative px-0.5 pt-1">
+                          <div className="flex h-3.5 overflow-hidden rounded-full ring-1 ring-base-content/15">
+                            <div
+                              className="min-w-0 flex-[55] bg-error/35"
+                              title="Poor zone: 0–55"
+                            />
+                            <div
+                              className="min-w-0 flex-[20] bg-warning/35"
+                              title="Fair zone: 55–75"
+                            />
+                            <div
+                              className="min-w-0 flex-[25] bg-success/35"
+                              title="Great zone: 75–100"
+                            />
+                          </div>
+                          <div
+                            className={`tw-readiness-spectrum-marker ${
+                              trailReadiness.label === "Great"
+                                ? "tw-readiness-spectrum-marker--great"
+                                : trailReadiness.label === "Fair"
+                                  ? "tw-readiness-spectrum-marker--fair"
+                                  : "tw-readiness-spectrum-marker--poor"
+                            }`}
+                            style={{
+                              left: `${Math.min(100, Math.max(0, trailReadiness.score))}%`,
+                            }}
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="mt-2 grid grid-cols-[55fr_20fr_25fr] gap-0.5 text-center text-[10px] font-bold uppercase leading-tight tracking-wide">
+                          <span className="text-error">Poor</span>
+                          <span className="text-warning">Fair</span>
+                          <span className="text-success">Great</span>
+                        </div>
+                        <div className="mt-1 flex justify-between px-0.5 font-mono text-[10px] tabular-nums text-base-content/45">
+                          <span>0</span>
+                          <span>55</span>
+                          <span>75</span>
+                          <span>100</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="max-w-sm text-center text-xs text-base-content/55">
+                      One number from rain, wind, UV, and temperature comfort—higher is generally better for
+                      easy trail miles.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="tw-card-shell tw-card-secondary mt-4 p-4 md:p-5 md:mt-5">
+                <p className="tw-section-kicker">Run Window (Next 8 Hours)</p>
+                <div className="tw-run-window-table mt-3">
+                  <div
+                    className="tw-run-window-header grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 px-1"
+                    role="row"
+                  >
+                    <span className="tw-run-window-th" role="columnheader">
+                      Time
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Temp
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Rain
+                    </span>
+                    <span className="tw-run-window-th" role="columnheader">
+                      Wind
+                    </span>
+                  </div>
+                  <div className="tw-flat-list tw-run-window-body" role="rowgroup">
+                    {nextHours.map((hour, index) => (
+                      <div
+                        key={hour.time}
+                        role="row"
+                        className={`tw-flat-row grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base ${
+                          index === bestRunWindowIndex ? "tw-highlight-row" : ""
+                        }`}
+                      >
+                        <span className="font-medium">
                           {index === 0
                             ? "Now"
                             : convertTo12HourFormat(hour.time.split(" ")[1])}
-                        </td>
-                        <td>
-                          {Math.round(hour.temp_f)}°{" "}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          {displayTemp(hour.temp_f, hour.temp_c)}
                           <img
-                            className="inline h-10 w-10"
+                            className="inline h-8 w-8"
                             alt="Weather condition"
                             aria-hidden="true"
                             src={hour.condition.icon}
                           />
-                        </td>
-                        <td>{hour.chance_of_rain}%</td>
-                        <td className="hidden sm:table-cell">
-                          {hour.wind_dir} {Math.round(hour.wind_mph)} mph
-                        </td>
-                      </tr>
+                        </span>
+                        <span className="text-base-content/80">
+                          {hour.chance_of_rain}%
+                        </span>
+                        <span className="text-base-content/80">
+                          {hour.wind_dir} {Math.round(hour.wind_mph)}
+                        </span>
+                      </div>
                     ))}
-                  <tr>
-                    <td className="font-bold">Tomorrow</td>
-                    <td></td>
-                    <td></td>
-                    <td className="hidden sm:table-cell"></td>
-                  </tr>
-                  {weatherData?.forecast.forecastday[1].hour
-                    .slice(0, currentHourIndex)
-                    .map((hour: any) => (
-                      <tr key={hour.time}>
-                        <td>
-                          {convertTo12HourFormat(hour.time.split(" ")[1])}
-                        </td>
-                        <td>
-                          {Math.round(hour.temp_f)}°{" "}
-                          <img
-                            className="inline h-10 w-10"
-                            alt="Weather condition"
-                            aria-hidden="true"
-                            src={hour.condition.icon}
-                          />
-                        </td>
-                        <td>{hour.chance_of_rain}%</td>
-                        <td className="hidden sm:table-cell">
-                          {hour.wind_dir} {Math.round(hour.wind_mph)} mph
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
-            Today in {weatherData.location.name}
-          </h3>
-          {/* Current Day Weather Attributes */}
-          <div className="stats flex flex-col lg:flex-row mt-4 lg:mt-0 mb-8 mx-auto w-10/12 lg:w-full  bg-base-200">
-            <div className="stat pb-0 lg:pb-4">
-              <div className="stat-title">Sunrise</div>
-              <div className="stat-value text-lg flex mb-2">
-                {weatherData.forecast.forecastday[0].astro.sunrise}
-                <Sunrise className="ml-4 stroke-secondary" />
-              </div>
-              <div className="stat-title">Sunset</div>
-              <div className="stat-value text-lg flex">
-                {weatherData.forecast.forecastday[0].astro.sunset}
-                <Sunset className="ml-4 stroke-secondary" />
-              </div>
-            </div>
-            <div className="stat pb-0 lg:pb-4">
-              <div className="stat-title">Humidity</div>
-              <div className="stat-value text-lg flex mb-2">
-                {weatherData.current.humidity}%
-                <Droplets className="ml-4 stroke-secondary" />
-              </div>
-              <div className="stat-title">UV Index</div>
-              <div className="stat-value text-lg flex">
-                {weatherData.current.uv} of 11
-                <Sun className="ml-4 stroke-secondary" />
-              </div>
-            </div>
-            <div className="stat pb-0 lg:pb-4">
-              <div className="stat-title">Chance of rain</div>
-              <div className="stat-value text-lg flex mb-2">
-                {weatherData.forecast.forecastday[0].day.daily_chance_of_rain}%
-                <CloudRain className="ml-4 stroke-secondary" />
-              </div>
-              <div className="stat-title">Chance of snow</div>
-              <div className="stat-value text-lg flex">
-                {weatherData.forecast.forecastday[0].day.daily_chance_of_snow}%
-                <Snowflake className="ml-4 stroke-secondary" />
-              </div>
-            </div>
-            <div className="stat pb-2 lg:pb-4">
-              <div className="stat-title">Moon Phase</div>
-              <div className="stat-value text-lg flex mb-2">
-                {weatherData.forecast.forecastday[0].astro.moon_phase}
-                <Moon className="ml-4 stroke-secondary" />
-              </div>
-              <div className="flex justify-between flex-wrap w-full">
-                <div className="stat-desc">
-                  Moonrise: {weatherData.forecast.forecastday[0].astro.moonrise}
+                  </div>
                 </div>
-                <div className="stat-desc">
-                  Moonset: {weatherData.forecast.forecastday[0].astro.moonset}
-                </div>
+                <p className="mt-3 text-sm text-base-content/65">
+                  Highlight shows the lowest rain + wind combination in this
+                  window.
+                </p>
               </div>
             </div>
-          </div>
-          {/* 3 Day Forecast Table */}
-          <div className="container mb-16 mx-auto">
-            <h3 className="flex my-4 px-8 sm:px-0 justify-center md:justify-start items-center flex-wrap text-2xl">
-              3 day forecast
-            </h3>
-            <div className="mx-auto w-10/12 lg:w-full overflow-y-auto">
-              <table className="table table-zebra table-sm md:table-lg table-pin-rows">
-                <thead>
-                  <tr>
-                    <th>Day</th>
-                    <th>High (°F)</th>
-                    <th>Low (°F)</th>
-                    <th>Condition</th>
-                    <th>Rain (%)</th>
-                    <th>Wind</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {weatherData?.forecast.forecastday.map(
-                    (forecastday: any, index: number) => (
-                      <tr key={index}>
-                        <td className="text-nowrap">
-                          {formatForecastDayDate(forecastday.date)}
-                        </td>
-                        <td>{Math.round(forecastday.day.maxtemp_f)}°</td>
-                        <td>{Math.round(forecastday.day.mintemp_f)}°</td>
-                        <td className="text-nowrap pr-12">
-                          {forecastday.day.condition.text}
-                          <img
-                            className="inline h-10 w-10"
-                            alt="Weather condition"
-                            aria-hidden="true"
-                            src={forecastday.day.condition.icon}
-                          />
-                        </td>
-                        <td>{forecastday.day.daily_chance_of_rain}%</td>
-                        <td className="text-nowrap">
-                          {Math.round(forecastday.day.maxwind_mph)} mph
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
+          </section>
+
+          <section className="tw-section-shell tw-section-day-outlook">
+            <p className="tw-section-kicker">3 Day outlook</p>
+            <div className="tw-day-outlook-shell">
+              <div className="tw-forecast-grid">
+                {weatherData.forecast.forecastday.map((forecastday, index) => (
+                  <div
+                    key={forecastday.date}
+                    className={`tw-forecast-day ${
+                      index === 0 ? "tw-forecast-today" : ""
+                    }`}
+                  >
+                    <div className="tw-forecast-day-header">
+                      <p className="inline-flex items-center gap-2 text-lg font-semibold">
+                        <CalendarDays className="h-4 w-4 shrink-0" />
+                        {index === 0
+                          ? "Today"
+                          : formatForecastDayDate(forecastday.date)}
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 text-sm text-base-content/75">
+                        <Compass className="h-4 w-4 shrink-0" />
+                        {Math.round(forecastday.day.maxwind_mph)} mph
+                      </span>
+                    </div>
+                    <div className="tw-forecast-day-condition">
+                      <p className="min-w-0 flex-1 text-base leading-snug">
+                        {forecastday.day.condition.text}
+                      </p>
+                      <img
+                        className="h-12 w-12 shrink-0"
+                        alt=""
+                        aria-hidden="true"
+                        src={forecastday.day.condition.icon}
+                      />
+                    </div>
+                    <div className="tw-forecast-day-stats">
+                      <div className="tw-forecast-stat">
+                        <span className="tw-forecast-stat-label">High</span>
+                        <span className="tw-forecast-stat-value">
+                          {displayTemp(
+                            forecastday.day.maxtemp_f,
+                            forecastday.day.maxtemp_c,
+                          )}
+                        </span>
+                      </div>
+                      <div className="tw-forecast-stat">
+                        <span className="tw-forecast-stat-label">Low</span>
+                        <span className="tw-forecast-stat-value">
+                          {displayTemp(
+                            forecastday.day.mintemp_f,
+                            forecastday.day.mintemp_c,
+                          )}
+                        </span>
+                      </div>
+                      <div className="tw-forecast-stat">
+                        <span className="tw-forecast-stat-label">Rain</span>
+                        <span className="tw-forecast-stat-value">
+                          {forecastday.day.daily_chance_of_rain}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       )}
-    </>
+    </div>
   );
 }

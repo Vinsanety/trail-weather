@@ -12,9 +12,9 @@
     radial-gradient(circle at 85% 0%, rgb(191 219 254 / 0.35), transparent 35%),
     linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
   --tw-modern-bg-dark:
-    radial-gradient(circle at 20% 10%, rgb(29 78 216 / 0.35), transparent 35%),
-    radial-gradient(circle at 85% 0%, rgb(8 145 178 / 0.25), transparent 30%),
-    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+    radial-gradient(circle at 20% 10%, rgb(59 130 246 / 0.32), transparent 42%),
+    radial-gradient(circle at 85% 0%, rgb(34 211 238 / 0.24), transparent 36%),
+    linear-gradient(180deg, #0b1120 0%, #1e293b 100%);
   --tw-surface-1: color-mix(in oklab, var(--b1), white 8%);
   --tw-surface-2: color-mix(in oklab, var(--b2), white 3%);
   --tw-surface-3: color-mix(in oklab, var(--b3), black 4%);

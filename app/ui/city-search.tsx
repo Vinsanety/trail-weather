@@ -565,7 +565,7 @@ export default function CitySearch() {
                     aria-label={`Run readiness ${trailReadiness.score} out of 100, ${trailReadiness.label}`}
                   >
                     <div className="tw-readiness-spectrum w-full space-y-4">
-                      <div className="text-left">
+                      <div className="flex justify-between text-left">
                         <p className="text-4xl font-bold tabular-nums leading-none tracking-tight md:text-5xl">
                           {trailReadiness.score}
                           <span className="text-xl font-semibold text-base-content/45 md:text-2xl">
@@ -652,13 +652,13 @@ export default function CitySearch() {
                               </p>
                             </div>
                           </div>
-                          <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end sm:text-right">
+                          <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
                             <span
                               className={`tw-chip-min ${levelClasses[card.level] || "tw-status-safe"}`}
                             >
                               {card.level}
                             </span>
-                            <p className="text-sm font-semibold tabular-nums">
+                            <p className="text-lg font-semibold tabular-nums leading-none md:text-xl">
                               {card.value}
                             </p>
                           </div>
@@ -673,7 +673,7 @@ export default function CitySearch() {
                 <p className="tw-section-kicker">Run Window (Next 8 Hours)</p>
                 <div className="tw-run-window-table mt-3">
                   <div
-                    className="tw-run-window-header grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 px-1"
+                    className="tw-run-window-header grid grid-cols-[1fr_1fr_0.8fr_0.8fr] items-center gap-2 px-1 sm:grid-cols-[0.8fr_1fr_0.8fr_0.8fr]"
                     role="row"
                   >
                     <span className="tw-run-window-th" role="columnheader">
@@ -697,18 +697,22 @@ export default function CitySearch() {
                       <div
                         key={hour.time}
                         role="row"
-                        className={`tw-flat-row grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base ${
+                        className={`tw-flat-row grid grid-cols-[1fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base sm:grid-cols-[0.8fr_1fr_0.8fr_0.8fr] ${
                           index === bestRunWindowIndex
                             ? "tw-highlight-row rounded-md bg-primary/20 ring-2 ring-primary/40 font-semibold"
                             : ""
                         }`}
                       >
-                        <span className="font-medium">
-                          {index === 0
-                            ? "Now"
-                            : convertTo12HourFormat(hour.time.split(" ")[1])}
+                        <span className="font-medium leading-tight">
+                          <span>
+                            {index === 0
+                              ? "Now"
+                              : convertTo12HourFormat(hour.time.split(" ")[1])}
+                          </span>
                           {index === bestRunWindowIndex && (
-                            <span className="tw-highlight-badge">Best</span>
+                            <span className="tw-highlight-badge tw-highlight-badge--mobile">
+                              Best
+                            </span>
                           )}
                         </span>
                         <span className="flex items-center gap-1">

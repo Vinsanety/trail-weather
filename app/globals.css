@@ -210,6 +210,16 @@ body {
     color: color-mix(in oklab, oklch(var(--p)), white 10%);
   }
 
+  .tw-highlight-badge--mobile {
+    @apply ml-0 mt-1 w-fit;
+  }
+
+  @media (min-width: 640px) {
+    .tw-highlight-badge--mobile {
+      @apply ml-2 mt-0;
+    }
+  }
+
   .tw-forecast-today {
     background: color-mix(in oklab, oklch(var(--p)), transparent 88%);
     border-color: color-mix(in oklab, oklch(var(--p)), transparent 55%);

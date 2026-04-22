@@ -119,13 +119,17 @@ export default function CitySearch() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: WeatherData = await response.json();
+      const resolvedLocation = [data.location.name, data.location.region]
+        .filter(Boolean)
+        .join(", ");
+      const displayLocation = resolvedLocation || query;
       setWeatherData(data);
-      setCity(query);
+      setCity(displayLocation);
       setErrorMsg("");
 
       const updatedRecent = [
-        query,
-        ...recentSearches.filter((entry) => entry !== query),
+        displayLocation,
+        ...recentSearches.filter((entry) => entry !== displayLocation),
       ].slice(0, 5);
       setRecentSearches(updatedRecent);
       localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updatedRecent));

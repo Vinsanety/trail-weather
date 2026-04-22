@@ -698,13 +698,18 @@ export default function CitySearch() {
                         key={hour.time}
                         role="row"
                         className={`tw-flat-row grid grid-cols-[0.8fr_1fr_0.8fr_0.8fr] items-center gap-2 text-base ${
-                          index === bestRunWindowIndex ? "tw-highlight-row" : ""
+                          index === bestRunWindowIndex
+                            ? "tw-highlight-row rounded-md bg-primary/20 ring-2 ring-primary/40 font-semibold"
+                            : ""
                         }`}
                       >
                         <span className="font-medium">
                           {index === 0
                             ? "Now"
                             : convertTo12HourFormat(hour.time.split(" ")[1])}
+                          {index === bestRunWindowIndex && (
+                            <span className="tw-highlight-badge">Best</span>
+                          )}
                         </span>
                         <span className="flex items-center gap-1">
                           {displayTemp(hour.temp_f, hour.temp_c)}

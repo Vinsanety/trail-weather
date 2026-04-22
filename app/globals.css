@@ -15,16 +15,16 @@
     radial-gradient(circle at 20% 10%, rgb(59 130 246 / 0.32), transparent 42%),
     radial-gradient(circle at 85% 0%, rgb(34 211 238 / 0.24), transparent 36%),
     linear-gradient(180deg, #0b1120 0%, #1e293b 100%);
-  --tw-surface-1: color-mix(in oklab, var(--b1), white 8%);
-  --tw-surface-2: color-mix(in oklab, var(--b2), white 3%);
-  --tw-surface-3: color-mix(in oklab, var(--b3), black 4%);
-  --tw-text-primary: var(--bc);
-  --tw-text-secondary: color-mix(in oklab, var(--bc), transparent 25%);
-  --tw-text-muted: color-mix(in oklab, var(--bc), transparent 40%);
-  --tw-border-subtle: color-mix(in oklab, var(--bc), transparent 82%);
-  --tw-status-safe: var(--su);
-  --tw-status-fair: var(--wa);
-  --tw-status-caution: var(--er);
+  --tw-surface-1: color-mix(in oklab, oklch(var(--b1)), white 8%);
+  --tw-surface-2: color-mix(in oklab, oklch(var(--b2)), white 3%);
+  --tw-surface-3: color-mix(in oklab, oklch(var(--b3)), black 4%);
+  --tw-text-primary: oklch(var(--bc));
+  --tw-text-secondary: color-mix(in oklab, oklch(var(--bc)), transparent 25%);
+  --tw-text-muted: color-mix(in oklab, oklch(var(--bc)), transparent 40%);
+  --tw-border-subtle: color-mix(in oklab, oklch(var(--bc)), transparent 82%);
+  --tw-status-safe: oklch(var(--su));
+  --tw-status-fair: oklch(var(--wa));
+  --tw-status-caution: oklch(var(--er));
 }
 
 html[data-theme="trail_light"],
@@ -193,14 +193,26 @@ body {
   }
 
   .tw-highlight-row {
-    background: color-mix(in oklab, var(--p), transparent 87%);
-    border-left: 2px solid var(--p);
-    padding-left: 0.75rem;
+    background: color-mix(in oklab, oklch(var(--p)), transparent 82%);
+    border-left: 4px solid oklch(var(--p));
+    border-top: 1px solid color-mix(in oklab, oklch(var(--p)), transparent 55%);
+    border-bottom: 1px solid color-mix(in oklab, oklch(var(--p)), transparent 55%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white, transparent 90%),
+      0 6px 14px -12px color-mix(in oklab, oklch(var(--p)), transparent 20%);
+    padding-left: 0.85rem;
+  }
+
+  .tw-highlight-badge {
+    @apply ml-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+    background: color-mix(in oklab, oklch(var(--p)), transparent 82%);
+    border: 1px solid color-mix(in oklab, oklch(var(--p)), transparent 45%);
+    color: color-mix(in oklab, oklch(var(--p)), white 10%);
   }
 
   .tw-forecast-today {
-    background: color-mix(in oklab, var(--p), transparent 88%);
-    border-color: color-mix(in oklab, var(--p), transparent 55%);
+    background: color-mix(in oklab, oklch(var(--p)), transparent 88%);
+    border-color: color-mix(in oklab, oklch(var(--p)), transparent 55%);
   }
 
   .tw-forecast-grid {
@@ -322,11 +334,11 @@ body {
 
   .tw-input-lined {
     @apply w-full bg-transparent px-0 py-2 text-base outline-none;
-    border-bottom: 1px solid color-mix(in oklab, var(--bc), transparent 65%);
+    border-bottom: 1px solid color-mix(in oklab, oklch(var(--bc)), transparent 65%);
   }
 
   .tw-input-lined:focus {
-    border-bottom-color: var(--p);
+    border-bottom-color: oklch(var(--p));
   }
 
   /* Use @apply for borders so Tailwind emits real border-width/color utilities.
@@ -334,15 +346,15 @@ body {
      leaves preflight’s `border-width: 0` on `*` — so the field looked borderless. */
   .tw-input-outlined {
     @apply w-full rounded-lg border-2 border-solid border-base-content/35 px-3 py-2.5 text-base outline-none transition-[border-color,box-shadow,background-color] duration-150 ease-out;
-    background-color: color-mix(in oklab, var(--b1), transparent 6%);
-    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%);
+    background-color: color-mix(in oklab, oklch(var(--b1)), transparent 6%);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, oklch(var(--bc)), transparent 92%);
   }
 
   .tw-input-outlined:focus {
     @apply border-primary;
     box-shadow:
-      0 0 0 3px color-mix(in oklab, var(--p), transparent 78%),
-      inset 0 1px 0 color-mix(in oklab, var(--bc), transparent 92%);
+      0 0 0 3px color-mix(in oklab, oklch(var(--p)), transparent 78%),
+      inset 0 1px 0 color-mix(in oklab, oklch(var(--bc)), transparent 92%);
   }
 
   .tw-btn-min {
